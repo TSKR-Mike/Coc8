@@ -135,12 +135,11 @@ try:
 
     loading.setValue('Loading dependencies...15% complete')
     loading.draw()
-    # 19%
     import numpy as np
-
+    import scipy
     loading.setValue('Loading dependencies...31% complete')
     loading.draw()
-    # 39%
+
     import sympy
 
     loading.setValue('Loading dependencies...57% complete')
@@ -249,8 +248,8 @@ line5 = ButtonCenter(None, (0, 0, 0), (90, 90, 150), (0, 50, 100), (20, 0, 80), 
 line6 = ButtonCenter(None, (0, 0, 0), (90, 90, 150), (0, 50, 100), (20, 0, 80), 8,
                      ['vector', 'divisors', 'prime factors', 'GCD', '<-(answer)', '->(answer)', 'head(answer)','No-mouse:OFF'], window, 120, 60, 0, 392, 124, 0, font=font_path,
                      font_size=14, callbacks=None)
-line7 = ButtonCenter(None, (0, 0, 0), (90, 90, 150), (0, 50, 100), (20, 0, 80), 2,
-                     ['paste', 'user guide'], window, 120, 60, 0, 452, 124, 0, font=font_path,
+line7 = ButtonCenter(None, (0, 0, 0), (90, 90, 150), (0, 50, 100), (20, 0, 80), 4,
+                     ['paste', 'user guide', 'A(n,m)', 'C(n,m)'], window, 120, 60, 0, 452, 124, 0, font=font_path,
                      font_size=14, callbacks=None)
 
 answer = ''
@@ -585,9 +584,9 @@ while True:
                             left = 0
                             right = 0
                             func = 0
-                elif INDEX == 2:  # unused button
+                elif INDEX == 2:
                     MEMORY = (texts, mathtext)
-                elif INDEX == 3:  # unused button
+                elif INDEX == 3:
                     texts, mathtext = MEMORY
                 elif INDEX == 4:
                     mode = 'RAD'
@@ -985,7 +984,7 @@ while True:
                         continue
                     answertext.setValue('')
                     num = textNumberDialogEventProgressing(window, (200, 100, 800, 200),
-                                                      'how many times do you want to differential at all', 'OK',
+                                                      'how many times do you want to differential at all',[],[], 'OK',
                                                       'CANCEL', backgroundColor=(90, 90, 150),
                                                       promptTextColor=(0, 0, 0),
                                                       inputTextColor=(0, 0, 0))
@@ -1034,7 +1033,7 @@ while True:
 
                     ploter = True
                     choise3 = textNumberDialogEventProgressing(window, (200, 100, 800, 200),
-                                                          'how many line(s) do you want to draw?', 'OK',
+                                                          'how many line(s) do you want to draw?',[],[], 'OK',
                                                           'CANCEL', backgroundColor=(90, 90, 150),
                                                           promptTextColor=(0, 0, 0),
                                                           inputTextColor=(0, 0, 0), allow_float=False, allow_negative=False)
@@ -1042,24 +1041,24 @@ while True:
                     if choise3 is None or choise3 < 1:
                         continue
                     x1 = textNumberDialogEventProgressing(window, (200, 100, 800, 200),
-                                                     'max x', 'OK',
+                                                     'max x', [],[],'OK',
                                                      'CANCEL', backgroundColor=(90, 90, 150),
                                                      promptTextColor=(0, 0, 0),
                                                      inputTextColor=(0, 0, 0))
                     if x1 is None:message_window.error('no value is given');continue
                     x2 = textNumberDialogEventProgressing(window, (200, 100, 800, 200),
-                                                     'min x', 'OK', 'CANCEL', backgroundColor=(90, 90, 150),
+                                                     'min x', [],[],'OK', 'CANCEL', backgroundColor=(90, 90, 150),
                                                      promptTextColor=(0, 0, 0),
                                                      inputTextColor=(0, 0, 0))
                     if x2 is None:message_window.error('no value is given');continue
                     y1 = textNumberDialogEventProgressing(window, (200, 100, 800, 200),
-                                                     'max y', 'OK',
+                                                     'max y', [],[],'OK',
                                                      'CANCEL', backgroundColor=(90, 90, 150),
                                                      promptTextColor=(0, 0, 0),
                                                      inputTextColor=(0, 0, 0))
                     if y1 is None:message_window.error('no value is given');continue
                     y2 = textNumberDialogEventProgressing(window, (200, 100, 800, 200),
-                                                     'min y', 'OK',
+                                                     'min y', [],[],'OK',
                                                      'CANCEL', backgroundColor=(90, 90, 150),
                                                      promptTextColor=(0, 0, 0),
                                                      inputTextColor=(0, 0, 0))
@@ -1240,7 +1239,7 @@ while True:
                             limit = textNumberDialogEventProgressing(window, (200, 100, 800, 200),
                                                                 'input the limit that you use in the formula:' + str(
                                                                     formula) + '(' + str(symbols) + ')',
-                                                                'OK',
+                                                                [], [], 'OK',
                                                                 'CANCEL', backgroundColor=(90, 90, 150),
                                                                 promptTextColor=(0, 0, 0),
                                                                 inputTextColor=(0, 0, 0))
@@ -1296,8 +1295,8 @@ while True:
                     vector_shower = VectorUi(window, clock, (0, 0), 1004, 610, all_data=vector_saved_data, no_mouse=no_mouse)
                     vector_saved_data = vector_shower.draw()
                 elif INDEX == 1:
-                    num = textNumberDialogEventProgressing(window, (0, 0, 1004, 190), 'input the number that you want to get the divisors', 'OK',
-                                                         'CANCEL', backgroundColor=(90, 90, 150),
+                    num = textNumberDialogEventProgressing(window, (0, 0, 1004, 190), 'input the number that you want to get the divisors',[],[],
+                                                           'OK', 'CANCEL', backgroundColor=(90, 90, 150),
                                                          promptTextColor=(0, 0, 0), inputTextColor=(0, 0, 0), allow_float=False, allow_negative=False)
                     if num is None:
                         message_window.error('exit because of empty input')
@@ -1305,7 +1304,7 @@ while True:
                     answertext.setValue(str(sympy.divisors(num)))
                 elif INDEX == 2:
                     num = textNumberDialogEventProgressing(window, (0, 0, 1004, 190),
-                                                      'input the number that you want to get the prime factors', 'OK',
+                                                      'input the number that you want to get the prime factors',[],[], 'OK',
                                                       'CANCEL', backgroundColor=(90, 90, 150),
                                                       promptTextColor=(0, 0, 0), inputTextColor=(0, 0, 0), allow_float=False, allow_negative=False)
                     if num is None:
@@ -1317,7 +1316,7 @@ while True:
                     answertext.setValue(str(sympy.factorint(num)))
                 elif INDEX == 3:
                     num = textNumberDialogEventProgressing(window, (0, 0, 1004, 190),
-                                                      'input the first number that you want to get the GCD', 'OK',
+                                                      'input the first number that you want to get the GCD',[],[], 'OK',
                                                       'CANCEL', backgroundColor=(90, 90, 150),
                                                       promptTextColor=(0, 0, 0), inputTextColor=(0, 0, 0), allow_float=False, allow_negative=False)
                     if num is None:
@@ -1327,7 +1326,7 @@ while True:
                         message_window.error('can only get the GCD of NONE ZERO integers')
                         break
                     num2 = textNumberDialogEventProgressing(window, (0, 0, 1004, 190),
-                                                      'input the second number that you want to get the GCD', 'OK',
+                                                      'input the second number that you want to get the GCD',[],[], 'OK',
                                                       'CANCEL', backgroundColor=(90, 90, 150),
                                                       promptTextColor=(0, 0, 0), inputTextColor=(0, 0, 0), allow_float=False, allow_negative=False)
                     if num2 is None:
@@ -1376,6 +1375,33 @@ while True:
                     except:
                         message_window.error('the content that you want to paste is:"'+str(content)+'" ;which is not a number(only numbers is supported yet)')
                 elif INDEX == 1:usr_notice.draw()
+                elif INDEX == 2:
+                    #A(n, m)
+                    n = textNumberDialogEventProgressing(window, (0, 0, 1004, 190), 'input the number "n"',[],[], 'OK',
+                                                         'CANCEL', backgroundColor=(90, 90, 150),
+                                                         promptTextColor=(0, 0, 0), inputTextColor=(0, 0, 0), allow_float=False, allow_negative=False)
+                    if n is None:message_window.error("No inputs is given");break
+                    m = textNumberDialogEventProgressing(window, (0, 0, 1004, 190), 'input the number "m"',[],[], 'OK',
+                                                         'CANCEL', backgroundColor=(90, 90, 150),
+                                                         promptTextColor=(0, 0, 0), inputTextColor=(0, 0, 0), allow_float=False, allow_negative=False)
+                    if m is None:message_window.error("No inputs is given");break
+                    if not n > m: message_window.error("n(" + str(n) + ") should be bigger than m(" + str(m) + ")!");break
+                    answertext.setValue(str(scipy.special.perm(n, m)))
+                    answer = str(scipy.special.perm(n, m))
+                elif INDEX == 3:
+                    #C(n, m)
+                    n = textNumberDialogEventProgressing(window, (0, 0, 1004, 190), 'input the number "n"',[],[], 'OK',
+                                                         'CANCEL', backgroundColor=(90, 90, 150),
+                                                         promptTextColor=(0, 0, 0), inputTextColor=(0, 0, 0), allow_float=False, allow_negative=False)
+                    if n is None:message_window.error("No inputs is given");break
+                    m = textNumberDialogEventProgressing(window, (0, 0, 1004, 190), 'input the number "m"', [],[],'OK',
+                                                         'CANCEL', backgroundColor=(90, 90, 150),
+                                                         promptTextColor=(0, 0, 0), inputTextColor=(0, 0, 0), allow_float=False, allow_negative=False)
+                    if m is None:message_window.error("No inputs is given");break
+                    if not n > m:message_window.error("n("+str(n)+") should be bigger than m("+str(m)+")!");break
+                    
+                    answertext.setValue(str(math.comb(n ,m)))
+                    answer = str(math.comb(n, m))
 
         if backspace.handleEvent(event):
             texts = texts[0:-1]

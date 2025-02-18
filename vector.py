@@ -310,13 +310,17 @@ class VectorUi(subWindow):
             self.minimize_button.draw()
 
             if self.update: self.update = False
-            for event in pygame.event.get():
-                if type(
-                    self.curr_vector_preview) == TableViewer.Table.WindowListViewer: self.curr_vector_preview.handle_event(
-                    event)
-                if type(
-                    self.all_vector_preview) == TableViewer.Table.WindowListViewer: self.all_vector_preview.handle_event(
-                    event)
+            events = pygame.event.get()
+            wheel_events, other = [], []
+            for curr in events:
+                if curr.type == pygame.MOUSEWHEEL:
+                    wheel_events.append(curr)
+                else:
+                    other.append(curr)
+            events = wheel_events + other
+            for event in events:
+                if type(self.curr_vector_preview) == TableViewer.Table.WindowListViewer: self.curr_vector_preview.handle_event(event)
+                if type(self.all_vector_preview) == TableViewer.Table.WindowListViewer: self.all_vector_preview.handle_event(event)
                 for curr in self.all_buttons_line1.Buttons:
                     if curr.handleEvent(event):
                         INDEX = self.all_buttons_line1.Buttons.index(curr)

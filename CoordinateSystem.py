@@ -266,6 +266,32 @@ class CoordinateSystem3d:
         self.zoom_out_button = Button(self.window, (self.loc[0] + 15, self.loc[1]), 30, 30, '-', (200, 200, 200),
                                        (0, 0, 0), fontName='fonts/JetBrainsMono-Light.ttf', font_size=15)
 
+        self.x_add_button = Button(self.window, (self.loc[0] + self.size[0] - 30, self.loc[1]), 30, 30, '+', (200, 200, 200),
+                                      (0, 0, 0), fontName='fonts/JetBrainsMono-Light.ttf', font_size=15)
+        self.x_minus_button = Button(self.window, (self.loc[0] + self.size[0] - 90, self.loc[1]), 30, 30, '-', (200, 200, 200),
+                                      (0, 0, 0), fontName='fonts/JetBrainsMono-Light.ttf', font_size=15)
+
+        self.y_add_button = Button(self.window, (self.loc[0] + self.size[0] - 30, self.loc[1] + 30), 30, 30, '+', (200, 200, 200),
+                                      (0, 0, 0), fontName='fonts/JetBrainsMono-Light.ttf', font_size=15)
+        self.y_minus_button = Button(self.window, (self.loc[0] + self.size[0] - 90, self.loc[1] + 30), 30, 30, '-', (200, 200, 200),
+                                      (0, 0, 0), fontName='fonts/JetBrainsMono-Light.ttf', font_size=15)
+
+        self.z_add_button = Button(self.window, (self.loc[0] + self.size[0] - 30, self.loc[1] + 60), 30, 30, '+', (200, 200, 200),
+                                      (0, 0, 0), fontName='fonts/JetBrainsMono-Light.ttf', font_size=15)
+        self.z_minus_button = Button(self.window, (self.loc[0] + self.size[0] - 90, self.loc[1] + 60), 30, 30, '-', (200, 200, 200),
+                                      (0, 0, 0), fontName='fonts/JetBrainsMono-Light.ttf', font_size=15)
+
+        self.z = Button(self.window, (self.loc[0] + self.size[0] - 60, self.loc[1] + 60), 30, 30, 'z',
+                                     (200, 200, 200),
+                                     (0, 0, 0), fontName='fonts/JetBrainsMono-Light.ttf', font_size=15)
+        self.y = Button(self.window, (self.loc[0] + self.size[0] - 60, self.loc[1] + 30), 30, 30, 'y',
+                                     (200, 200, 200),
+                                     (0, 0, 0), fontName='fonts/JetBrainsMono-Light.ttf', font_size=15)
+        self.x = Button(self.window, (self.loc[0] + self.size[0] - 60, self.loc[1]), 30, 30, 'x',
+                                     (200, 200, 200),
+                                     (0, 0, 0), fontName='fonts/JetBrainsMono-Light.ttf', font_size=15)
+        self.mouse_wheel_direction = 1
+
     def AddItem(self, start_pos, end_pos, color=None, label: str = None, item_type=ARROW):
         """
         :param start_pos: you have to fill this anyway. If it is a POINT, this is the pos of the point.
@@ -370,8 +396,7 @@ class CoordinateSystem3d:
         size = self.canvas.get_width_height()
         surf = pygame.image.frombuffer(self.raw_data, size, "RGBA")
         self.window.blit(surf, self.loc)
-        surf.set_alpha(255)  # 强制不透明
-        # 仅更新变化区域
+        surf.set_alpha(255)
         updated_rect = surf.get_rect()
         self.window.blit(surf, self.loc, updated_rect)
         if self.no_mouse:
@@ -379,13 +404,22 @@ class CoordinateSystem3d:
             self.left_move_button.draw()
             self.reset_button.draw();self.right_move_button.draw()
             self.zoom_in_button.draw();self.zoom_out_button.draw()
+        self.x_add_button.draw();self.x_minus_button.draw()
+        self.y_add_button.draw();self.y_minus_button.draw()
+        self.z_add_button.draw();self.z_minus_button.draw()
+        self.x.draw();self.y.draw();self.z.draw()
 
     def handle_event(self, event):
         if event.type == pygame.QUIT:
             pass
+        elif event.type == pygame.MOUSEWHEEL:
+            mouse_x, mouse_y = pygame.mouse.get_pos()
+            if self.loc[0] + self.size[0] > mouse_x > self.loc[0] + self.size[0] - 90 and self.loc[1] < mouse_y < self.loc[1] + 90:
+                self.mouse_wheel_direction = 1 if event.y < 0 else -1
+                return False
+            scale_factor = 1.1 if event.y < 0 else 0.9
+            self.last_lim = [scale_factor * i for i in self.last_lim]
         elif event.type == pygame.MOUSEBUTTONUP:
-            if event.button == 1:  # 左键释放
-                self.dragging = False
             if self.no_mouse:
                 if self.down_move_button.handle_event(event):
                     self.current_elev -= 10
@@ -441,8 +475,32 @@ class CoordinateSystem3d:
 
                 elif self.zoom_in_button.handle_event(event):
                     self.last_lim = [0.9 * i for i in self.last_lim]
+            if self.x_add_button.handle_event(event):
+                x_abs = abs(self.last_lim[1]-self.last_lim[0])
+                self.last_lim = [self.last_lim[0] + 0.1*x_abs*self.mouse_wheel_direction, self.last_lim[1] + 0.1*x_abs*self.mouse_wheel_direction, *self.last_lim[2:6]]
+            elif self.x_minus_button.handle_event(event):
+                x_abs = abs(self.last_lim[1] - self.last_lim[0])
+                self.last_lim = [self.last_lim[0] - 0.1 * x_abs*self.mouse_wheel_direction, self.last_lim[1] - 0.1 * x_abs*self.mouse_wheel_direction, *self.last_lim[2:6]]
+            elif self.y_add_button.handle_event(event):
+                y_abs = abs(self.last_lim[3]-self.last_lim[2])
+                self.last_lim = [*self.last_lim[0:2], self.last_lim[2] + 0.1*y_abs*self.mouse_wheel_direction, self.last_lim[3] + 0.1*y_abs*self.mouse_wheel_direction, *self.last_lim[4:6]]
+            elif self.y_minus_button.handle_event(event):
+                y_abs = abs(self.last_lim[3] - self.last_lim[2])
+                self.last_lim = [*self.last_lim[0:2], self.last_lim[2] - 0.1 * y_abs*self.mouse_wheel_direction, self.last_lim[3] - 0.1 * y_abs*self.mouse_wheel_direction,
+                                     *self.last_lim[4:6]]
+            elif self.z_add_button.handle_event(event):
+                z_abs = abs(self.last_lim[5] - self.last_lim[4])
+                self.last_lim = [*self.last_lim[0:4], self.last_lim[4] + 0.1 * z_abs*self.mouse_wheel_direction, self.last_lim[5] + 0.1 * z_abs*self.mouse_wheel_direction]
+            elif self.z_minus_button.handle_event(event):
+                z_abs = abs(self.last_lim[5] - self.last_lim[4])
+                self.last_lim = [*self.last_lim[0:4], self.last_lim[4] - 0.1 * z_abs*self.mouse_wheel_direction, self.last_lim[5] - 0.1 * z_abs*self.mouse_wheel_direction]
+            if event.button == 1:  # 左键释放
+                self.dragging = False
 
         elif event.type == pygame.MOUSEBUTTONDOWN:
+            mouse_x, mouse_y = pygame.mouse.get_pos()
+            if mouse_x > self.loc[0] + self.size[0] - 90 and mouse_y < 90:
+                return False
             if event.button == 1:  # 右键按下
                 self.dragging = True
                 self.last_mouse_pos = event.pos
@@ -482,11 +540,7 @@ class CoordinateSystem3d:
             self.canvas.draw()
             self.raw_data = self.renderer.buffer_rgba()
 
-        # 添加滚轮缩放功能
-        elif event.type == pygame.MOUSEWHEEL:
-            # 获取当前缩放比例
-            scale_factor = 1.1 if event.y < 0 else 0.9
-            self.last_lim = [scale_factor * i for i in self.last_lim]
+
 
     def draw_3d_mark_lines(self, loc, ax, color=(0, 0, 255)):
         self.ax.plot([loc[0], loc[0]], [self.last_lim[2], loc[1]], [loc[2], loc[2]], linestyle='--', color=(color[0]/255, color[1]/255, color[2]/255))
@@ -599,7 +653,15 @@ if __name__ == '__main__':
     # 游戏主循环
     running = True
     while running:
-        for event in pygame.event.get():
+        events = pygame.event.get()
+        wheel_events, other = [], []
+        for curr in events:
+            if curr.type == pygame.MOUSEWHEEL:
+                wheel_events.append(curr)
+            else:
+                other.append(curr)
+        events = wheel_events + other
+        for event in events:
             if event.type == pygame.QUIT:
                 running = False
             a.handle_event(event)
