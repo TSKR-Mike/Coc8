@@ -199,8 +199,8 @@ pygame.font.init()
 loading_obj.done()
 """
 ----------------------------
-| version: 8.5             |
-| develop time: 2025-2-9   |
+| version: 8.7             |
+| develop time: 2025-2-19  |
 ----------------------------
 """
 
@@ -272,6 +272,7 @@ pygame.display.update()
 text_length_warned = False
 answer_start_index = 0
 pygame.key.set_repeat(200)
+operator = True
 ###############################################################################################################
 #main loop-----------------------------------------------------------------------------------------------------
 ###############################################################################################################
@@ -427,6 +428,10 @@ while True:
                     mathtext = mathtext[0:-1]
                 while mathtext[-1] == " ":
                     mathtext = mathtext[0:-1]
+                if mathtext[-1] == '[':
+                    left -= 1
+                elif mathtext[-1] == ']':
+                    right -= 1
                 mathtext = mathtext[0:-1]
                 if any(a in mathtext.split(" ")[-1] for a in functions):
                     # ["sin","cos","tan",'arcsin',"arccos","arctan","log","in","root"]
@@ -494,13 +499,15 @@ while True:
                 if INDEX < 10:  # 输入数字
                     texts += str(INDEX)
                     mathtext += str(INDEX)
+                    operator = False
                 else:
                     if INDEX == 15:
                         texts = ''; mathtext = ''
-                        answer = ''; point = True
+                        answer = ''; point = True; operator = True
                     elif INDEX == 10:
                         texts += '+'
                         point = True
+                        operator = True
                         if left > right:  # 当前输入的是函数的参数
                             mathtext += '+'
                         else:
@@ -511,12 +518,19 @@ while True:
                         point = True
                         if left > right:  # 当前输入的是函数的参数
                             mathtext += '-'
+                            operator = True
                         else:
-                            mathtext += ' - '  # 在[]外
+                            if operator:  # 取相反数
+                                mathtext += '-'
+                                operator = False
+                            else:
+                                operator = True
+                                mathtext += ' - '  # 在[]外
                             func = 0
                     elif INDEX == 12:
                         texts += '*'
                         point = True
+                        operator = True
                         if left > right:  # 当前输入的是函数的参数
                             mathtext += '*'
                         else:
@@ -525,6 +539,7 @@ while True:
                     elif INDEX == 13:
                         texts += '/'
                         point = True
+                        operator = True
                         if left > right:  # 当前输入的是函数的参数
                             mathtext += '/'
                         else:
@@ -560,6 +575,7 @@ while True:
             INDEX = line2.Buttons.index(i)
             if i.handleEvent(event):
                 if INDEX == 0:
+                    operator = True
                     texts += '('
                     if not func:
                         if left > right:  # 当前输入的是函数的参数
@@ -570,6 +586,7 @@ while True:
                         mathtext += '['
                         left += 1
                 elif INDEX == 1:
+                    operator = False
                     texts += ')'
                     if not func:
                         if left > right:  # 当前输入的是函数的参数
@@ -596,42 +613,52 @@ while True:
                     texts += 'sin'
                     mathtext += 'sin;'
                     func = 1
+                    operator = True
                 elif INDEX == 7:
                     texts += 'cos'
                     mathtext += 'cos;'
                     func = 1
+                    operator = True
                 elif INDEX == 8:
                     texts += 'tan'
                     mathtext += 'tan;'
                     func = 1
+                    operator = True
                 elif INDEX == 9:
                     texts += 'arcsin'
                     mathtext += 'arcsin;'
                     func = 1
+                    operator = True
                 elif INDEX == 10:
                     texts += 'arccos'
                     mathtext += 'arccos;'
                     func = 1
+                    operator = True
                 elif INDEX == 11:
                     texts += 'arctan'
                     mathtext += 'arctan;'
                     func = 1
+                    operator = True
                 elif INDEX == 12:
                     texts += '!'
                     mathtext += '!'
                     func = 1
+                    operator = False
                 elif INDEX == 13:
                     texts += 'log'
                     mathtext += 'log'
                     func = 1
+                    operator = True
                 elif INDEX == 14:
                     texts += 'ln'
                     mathtext += 'ln'
                     func = 1
+                    operator = True
                 elif INDEX == 15:
                     texts += '√'
                     mathtext += 'root'
                     func = 1
+                    operator = True
                 event_proceeded = True
                 break
 
@@ -1186,8 +1213,8 @@ while True:
                         all_formulas = [i for i in all_formulas if i is not None]
                         for current, index in zip(all_formulas, range(len(all_formulas))):
                             if '=' in current:
-                                left, right = current.split('=')[0], current.split('=')[1]
-                                all_formulas[index] = left + '-(' + right + ')'
+                                left_part, right_part = current.split('=')[0], current.split('=')[1]
+                                all_formulas[index] = left_part + '-(' + right_part + ')'
                         symbols = pyghelpers.textAnswerDialog(window, (200, 100, 800, 200),
                                                               'input the symbol(s) that you use in the formula:' + str(
                                                                   formula) + ',split with ";"',
@@ -1411,6 +1438,10 @@ while True:
                 mathtext = mathtext[0:-1]
             while mathtext[-1] == " ":
                 mathtext = mathtext[0:-1]
+            if mathtext[-1] == '[':
+                left -= 1
+            elif mathtext[-1] == ']':
+                right -= 1
             mathtext = mathtext[0:-1]
             if any(a in mathtext.split(" ")[-1] for a in
                    functions):  # ["sin","cos","tan",'arcsin',"arccos","arctan","log","in","root"]

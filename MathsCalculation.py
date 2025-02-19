@@ -10,17 +10,17 @@ def trans_to_RPN(item) -> list:
     List = []
     math1 = []
     s = []
-    parenthesis = False
     subtract = False
     transformed_symbol = False
     item1 = [i for i in item if len(i) != 0]
+    operator = False
     for i in item1:
         if i == '(':
+            operator = True
             List.append(i)
             s.append(len(List))
-            parenthesis = True
         elif i == ')':
-            parenthesis = False
+            operator = False
             subtract = False
             b = s[-1]
             del s[-1]
@@ -34,12 +34,15 @@ def trans_to_RPN(item) -> list:
                 # '-' to '+' because the '-'(in the original formula) is OUTSIDE the parenthesis.
                 if len(List) > 0:
                     if '-' in List:
-                        if not transformed_symbol: # means the symbol is original INSTEAD of changed one.
-                            subtract = True
-                        else: # means the symbol '-' comes from the last transformation at this place
-                            # so it is NOT the one inside the formula, so no transformation needed
-                            subtract = False
-                            transformed_symbol = False
+                        if not operator:# means it can not take the opposite of a number
+                            if not transformed_symbol: # means the symbol is original INSTEAD of changed one.
+                                subtract = True
+                            else: # means the symbol '-' comes from the last transformation at this place
+                                # so it is NOT the one inside the formula, so no transformation needed
+                                subtract = False
+                                transformed_symbol = False
+                        else:operator = False
+
                     c = List[-1]
                     if c in ['*', '/']:
                         while len(List) > 0:
@@ -47,7 +50,7 @@ def trans_to_RPN(item) -> list:
                             if last in '+-*/':
                                 math1.append(last)
                             del List[-1]
-                if subtract:
+                if subtract and not operator:
                     if i == '+':List.append('-')
                     else:List.append('+')# 'i' is '-' and it is the one inside the formula. so reverse needed.
                     transformed_symbol = True
@@ -55,7 +58,15 @@ def trans_to_RPN(item) -> list:
                     List.append(i)
             else:
                 List.append(i)
+
+            if not operator:
+                operator = True
+            else:
+                if i == '-':
+                    operator = False
+
         else:
+            operator = False
             math1.append(i)
     while len(List) > 0:
         c = List[-1]
@@ -67,20 +78,36 @@ def trans_to_RPN(item) -> list:
     return math1
 
 
-def turn_normal_expr_to_internal_expr(item):
+def turn_normal_expr_to_internal_expr(item: str|list|tuple):
     loc = 0
     file = item
-    num_left = 0  # [ 的数量
-    num_right = 0  # ] 的数量
+    num_left = 0  # [ number
+    num_right = 0  # ] number
+    operator = False
+    # '-' can only appear after an operator. such as '4 + -2', and '4 - --2' is illegal
     for i in file:
         if i in ['+', '-', '/', '*', '(', ')']:
+            if i == '(' or i == ')':
+                operator = True
             if num_left == num_right:
-                file = file[0:loc] + ' ' + i + ' ' + file[loc + 1:len(file)]
-                loc += 2
+                if operator and i == '-':
+                    operator = False
+                else:
+                    if not operator: operator = True
+                    file = file[0:loc] + ' ' + i + ' ' + file[loc + 1:len(file)]
+                    loc += 2
+            else:
+                if operator and i == '-':
+                    operator = False
+
         elif i == '[':
             num_left += 1
+            operator = True
         elif i == ']':
             num_right += 1
+            operator = True
+        else:
+            operator = False
         loc += 1
     return file
 
@@ -91,31 +118,36 @@ def __calculation(inputting: str, outputting: list, index: int):
     if inputting == '+':
         m = outputting[index - 2]
         g = outputting[index - 1]
+        print(m, g, 'calculating+')
         del outputting[index - 2]
         del outputting[index - 2]
-        print(g)
         if str(g)[0] == '[' and str(g)[-1] == ']':
             g = Calculation(turn_normal_expr_to_internal_expr(str(g)[1:-1]))
         if str(m)[0] == '[' and str(m)[-1] == ']':
-            f = Calculation(turn_normal_expr_to_internal_expr(str(m)[1:-1]))
+            m = Calculation(turn_normal_expr_to_internal_expr(str(m)[1:-1]))
         outputting[index - 2] = (Decimal(m) + Decimal(g))
     elif inputting == '-':
         m = outputting[index - 2]
         g = outputting[index - 1]
+        print(m, g, 'calculating-')
         if str(g)[0] == '[' and str(g)[-1] == ']':
             g = Calculation(turn_normal_expr_to_internal_expr(str(g)[1:-1]))
         if str(m)[0] == '[' and str(m)[-1] == ']':
-            f = Calculation(turn_normal_expr_to_internal_expr(str(m)[1:-1]))
-        del outputting[index - 2]
-        del outputting[index - 2]
-        outputting[index - 2] = Decimal(m) - Decimal(g)
+            m = Calculation(turn_normal_expr_to_internal_expr(str(m)[1:-1]))
+        if m == '-':
+            del outputting[index - 2]
+            outputting[index - 1] = -Decimal(g)
+        else:
+            del outputting[index - 2]
+            del outputting[index - 2]
+            outputting[index - 2] = Decimal(m) - Decimal(g)
     elif inputting == '/':
         m = outputting[(index - 2)]
         g = outputting[(index - 1)]
         if str(g)[0] == '[' and str(g)[-1] == ']':
             g = Calculation(turn_normal_expr_to_internal_expr(str(g)[1:-1]))
         if str(m)[0] == '[' and str(m)[-1] == ']':
-            f = Calculation(turn_normal_expr_to_internal_expr(str(m)[1:-1]))
+            m = Calculation(turn_normal_expr_to_internal_expr(str(m)[1:-1]))
         del outputting[index - 2]
         del outputting[index - 2]
         outputting[index - 2] = (Decimal(m) / Decimal(g))
@@ -125,7 +157,7 @@ def __calculation(inputting: str, outputting: list, index: int):
         if str(g)[0] == '[' and str(g)[-1] == ']':
             g = Calculation(turn_normal_expr_to_internal_expr(str(g)[1:-1]))
         if str(m)[0] == '[' and str(m)[-1] == ']':
-            f = Calculation(turn_normal_expr_to_internal_expr(str(m)[1:-1]))
+            m = Calculation(turn_normal_expr_to_internal_expr(str(m)[1:-1]))
         del outputting[index - 2]
         del outputting[index - 2]
         outputting[index - 2] = (Decimal(m) * Decimal(g))
@@ -169,6 +201,7 @@ def Calculation(item1: str, mode: str = 'RAD'):
     item2 = item1
     item1 = str(item2).split(' ')
     item = trans_to_RPN(item1)
+    print('after trans:', item)
     r = 0
     for i in item:
         r = 0
@@ -282,15 +315,15 @@ def Calculation(item1: str, mode: str = 'RAD'):
                     try:
                         item[loc] = (math.factorial(int(j.split('!')[0])))
                     except TypeError:
-                        return ('ERROR')
+                        return 'ERROR'
                 else:
                     try:
                         item[loc] = (math.factorial(int(Calculation(turn_normal_expr_to_internal_expr(j.split('!')[0][j.index('[') + 1:-1])))))
                     except TypeError:
-                        return ('ERROR')
+                        return 'ERROR'
             else:
                 if ';' in str(j):
-                    return ('ERROR')
+                    return 'ERROR'
                 else:
                     if 'root' in str(j):
                         if not (('[' in j) and (']' in j)):
@@ -302,7 +335,7 @@ def Calculation(item1: str, mode: str = 'RAD'):
                                 except ValueError:
                                     item[loc] = Decimal(b) ** (1 / Decimal(a))
                             except ValueError:
-                                return ('TYPE ERROR,must be int or float')
+                                return 'TYPE ERROR,must be int or float'
                         else:
                             a = j.split('root')[0]
                             b = j.split('root')[1]
@@ -330,7 +363,7 @@ def Calculation(item1: str, mode: str = 'RAD'):
                             except ValueError:
                                 item[loc] = math.log(Decimal(b), Decimal(a))
                         else:
-                            if (('[' in a) and (']' in a)):
+                            if ('[' in a) and (']' in a):
                                 a = Calculation(turn_normal_expr_to_internal_expr(j.split('log')[0][j.index('[') + 1:-1]))
                             else:
                                 a = Decimal(j.split('log')[0])
@@ -386,4 +419,10 @@ def Calculation(item1: str, mode: str = 'RAD'):
 #
 # 计算试例  ∮∭∬∑±∫∰∯
 if __name__ == '__main__':
-    print(trans_to_RPN('9 - ( 1 * 10 + ( 3 + 1 ) ) '.split(' ')))
+    #print(trans_to_RPN('9 - ( 1 * 10 + ( 3 + 1 ) ) '.split(' ')))
+    print(Calculation(turn_normal_expr_to_internal_expr('1--4+-(101-2)')))
+    print(turn_normal_expr_to_internal_expr('1--4+-(101-2)'), 'exp')
+    #print(trans_to_RPN('9 + ( -7 + -2 )'.split(' ')))
+    #print(turn_normal_expr_to_internal_expr('(1--2)+3-4-12-(-(3-5))'))
+    # ( 1 - -2 ) + 3 - 4 - 12 - ( - ( 3 - 5 ) )
+    #print(turn_normal_expr_to_internal_expr('1 - ( 2 - 4 + 5 ) '))
