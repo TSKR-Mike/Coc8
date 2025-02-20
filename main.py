@@ -1055,7 +1055,7 @@ while True:
                         continue
                     break_ = False
                     Answer = None
-                    for c2 in range(int(num) - 1):
+                    for c2 in range(int(num)):
                         check = CheckBox(3, ['to x', 'to y', 'to z'], 1, window, clock, 300, 300, each_add_x=0,
                                          each_add_y=10)
                         if len(check.clicked_choices) == 1:
