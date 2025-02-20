@@ -50,7 +50,7 @@ def trans_to_RPN(item) -> list:
                             if last in '+-*/':
                                 math1.append(last)
                             del List[-1]
-                if subtract and not operator:
+                if subtract and not operator: # isn't taking the opposite
                     if i == '+':List.append('-')
                     else:List.append('+')# 'i' is '-' and it is the one inside the formula. so reverse needed.
                     transformed_symbol = True
@@ -118,7 +118,7 @@ def __calculation(inputting: str, outputting: list, index: int):
     if inputting == '+':
         m = outputting[index - 2]
         g = outputting[index - 1]
-        print(m, g, 'calculating+')
+        #print(m, g, 'calculating+')
         del outputting[index - 2]
         del outputting[index - 2]
         if str(g)[0] == '[' and str(g)[-1] == ']':
@@ -129,7 +129,7 @@ def __calculation(inputting: str, outputting: list, index: int):
     elif inputting == '-':
         m = outputting[index - 2]
         g = outputting[index - 1]
-        print(m, g, 'calculating-')
+        #print(m, g, 'calculating-')
         if str(g)[0] == '[' and str(g)[-1] == ']':
             g = Calculation(turn_normal_expr_to_internal_expr(str(g)[1:-1]))
         if str(m)[0] == '[' and str(m)[-1] == ']':
@@ -144,6 +144,7 @@ def __calculation(inputting: str, outputting: list, index: int):
     elif inputting == '/':
         m = outputting[(index - 2)]
         g = outputting[(index - 1)]
+        # print(m, g, 'calculating/')
         if str(g)[0] == '[' and str(g)[-1] == ']':
             g = Calculation(turn_normal_expr_to_internal_expr(str(g)[1:-1]))
         if str(m)[0] == '[' and str(m)[-1] == ']':
@@ -154,6 +155,7 @@ def __calculation(inputting: str, outputting: list, index: int):
     elif inputting == '*':
         m = outputting[(index - 2)]
         g = outputting[(index - 1)]
+        # print(m, g, 'calculating*')
         if str(g)[0] == '[' and str(g)[-1] == ']':
             g = Calculation(turn_normal_expr_to_internal_expr(str(g)[1:-1]))
         if str(m)[0] == '[' and str(m)[-1] == ']':
@@ -201,8 +203,7 @@ def Calculation(item1: str, mode: str = 'RAD'):
     item2 = item1
     item1 = str(item2).split(' ')
     item = trans_to_RPN(item1)
-    print('after trans:', item)
-    r = 0
+    #print('after trans:', item)
     for i in item:
         r = 0
         for a in i:
@@ -411,7 +412,7 @@ def Calculation(item1: str, mode: str = 'RAD'):
     try:
         n = Decimal(item[0])
     except TypeError or ValueError as e:
-        print(str(e))
+        #print(str(e))
         return str(e)
     return n
 

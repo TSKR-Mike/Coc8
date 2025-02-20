@@ -248,8 +248,8 @@ line5 = ButtonCenter(None, (0, 0, 0), (90, 90, 150), (0, 50, 100), (20, 0, 80), 
 line6 = ButtonCenter(None, (0, 0, 0), (90, 90, 150), (0, 50, 100), (20, 0, 80), 8,
                      ['vector', 'divisors', 'prime factors', 'GCD', '<-(answer)', '->(answer)', 'head(answer)','No-mouse:OFF'], window, 120, 60, 0, 392, 124, 0, font=font_path,
                      font_size=14, callbacks=None)
-line7 = ButtonCenter(None, (0, 0, 0), (90, 90, 150), (0, 50, 100), (20, 0, 80), 4,
-                     ['paste', 'user guide', 'A(n,m)', 'C(n,m)'], window, 120, 60, 0, 452, 124, 0, font=font_path,
+line7 = ButtonCenter(None, (0, 0, 0), (90, 90, 150), (0, 50, 100), (20, 0, 80), 5,
+                     ['paste', 'user guide', 'A(n,m)', 'C(n,m)', 'copy formula'], window, 120, 60, 0, 452, 124, 0, font=font_path,
                      font_size=14, callbacks=None)
 
 answer = ''
@@ -342,6 +342,7 @@ while True:
                 answer = ''; point = True
             num = get_number_key(event)
             if num is not None:
+                operator = False
                 texts += str(num)
                 mathtext += str(num)
                 continue
@@ -355,13 +356,20 @@ while True:
                     else:
                         mathtext += ' + '  # 在[]外
                         func = 0
+                    operator = True
                 elif symbol == '-':
                     texts += '-'
                     point = True
                     if left > right:  # 当前输入的是函数的参数
                         mathtext += '-'
+                        operator = True
                     else:
-                        mathtext += ' - '  # 在[]外
+                        if operator:  # 取相反数
+                            mathtext += '-'
+                            operator = False
+                        else:
+                            operator = True
+                            mathtext += ' - '  # 在[]外
                         func = 0
                 elif symbol == '*':
                     texts += '*'
@@ -371,6 +379,7 @@ while True:
                     else:
                         mathtext += ' * '  # 在[]外
                         func = 0
+                    operator = True
                 elif symbol == '/':
                     texts += '/'
                     point = True
@@ -379,6 +388,7 @@ while True:
                     else:
                         mathtext += ' / '  # 在[]外
                         func = 0
+                    operator = True
                 elif symbol == '.':
                     if point:
                         texts += '.'
@@ -396,6 +406,7 @@ while True:
                     else:
                         mathtext += '['
                         left += 1
+                    operator = True
                 elif symbol == ')':
                     texts += ')'
                     if not func:
@@ -411,14 +422,17 @@ while True:
                             left = 0
                             right = 0
                             func = 0
+                    operator = False
                 elif symbol == '!':
                     mathtext += '!'
                     texts += '!'
                     func = 1
+                    operator = False
                 elif symbol == '^':
                     point = True
                     texts += '^'
                     mathtext += '^'
+                    operator = True
                 continue
             if event.key == pygame.K_BACKSPACE:
                 texts = texts[0:-1]
@@ -1179,6 +1193,7 @@ while True:
                 if INDEX == 0:
                     texts += '-'
                     mathtext += '-'
+                    operator = False
                 elif INDEX == 1:
                     texts += '%'
                     mathtext += '%'
@@ -1429,6 +1444,7 @@ while True:
                     
                     answertext.setValue(str(math.comb(n ,m)))
                     answer = str(math.comb(n, m))
+                elif INDEX == 4:pyperclip.copy(texts)
 
         if backspace.handleEvent(event):
             texts = texts[0:-1]

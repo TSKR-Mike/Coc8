@@ -258,7 +258,7 @@ def load_matrix_3_choices(window, clock, names,debug=False):
             return loading_matrix(choice, window, names)
         else:
             try:
-                message_window.select_file(dir='/MatrixFiles')
+                message_window.select_file(dir='MatrixFiles')
                 file_name = message_window.file_name
                 return load_matrix_from_CocMatrixInfo(file_name, names)
             except Exception as e:

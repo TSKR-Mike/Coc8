@@ -171,7 +171,7 @@ def load_complex(window, clock, names, debug=False):
             return [[complex_name, str(complex(str(real)+'+'+str(imagine)+'j'))]]
         elif choice == 1:
             try:
-                message_window.select_file()
+                message_window.select_file(dir='ComplexFiles')
                 file_name = message_window.file_name
                 return load_complex_from_CocComplexInfo(file_name, names)
             except Exception as e:

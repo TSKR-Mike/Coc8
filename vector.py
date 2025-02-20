@@ -214,7 +214,7 @@ def load_vector(window, clock, names, debug=False):
             return [[vector_name, str(tuple([float(x), float(y), float(z)]))]]
         elif choice == 1:
             try:
-                message_window.select_file()
+                message_window.select_file(dir='VectorFiles')
                 file_name = message_window.file_name
                 return load_vector_from_CocVectorInfo(file_name, names)
             except Exception as e:
