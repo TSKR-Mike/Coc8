@@ -304,6 +304,7 @@ while True:
                         content) + '" ;which is not a number(only numbers is supported yet)')
                     continue
             if event.key == pygame.K_RETURN:
+                print(mathtext)
                 try:
                     if mode == 'RAD':
                         text_ = Calculation(mathtext, 'RAD')
@@ -339,7 +340,7 @@ while True:
                     answertext.setValue(_[answer_start_index:66 + answer_start_index])
             elif event.key == pygame.K_DELETE:
                 texts = ''; mathtext = ''
-                answer = ''; point = True
+                answer = ''; point = True; operator = True
             num = get_number_key(event)
             if num is not None:
                 operator = False
@@ -437,18 +438,38 @@ while True:
             if event.key == pygame.K_BACKSPACE:
                 texts = texts[0:-1]
                 if len(mathtext) == 0:
+                    operator = True
                     continue
-                if mathtext[-1] == ';':
-                    mathtext = mathtext[0:-1]
                 while mathtext[-1] == " ":
+                    mathtext = mathtext[0:-1]
+                if mathtext[-1] == ';':
                     mathtext = mathtext[0:-1]
                 if mathtext[-1] == '[':
                     left -= 1
                 elif mathtext[-1] == ']':
                     right -= 1
                 mathtext = mathtext[0:-1]
-                if any(a in mathtext.split(" ")[-1] for a in functions):
-                    # ["sin","cos","tan",'arcsin',"arccos","arctan","log","in","root"]
+
+                while (len(mathtext) != 0)and(mathtext[-1] == ' '):
+                    mathtext = mathtext[0:-1]
+
+                if len(mathtext) == 0:
+                    operator = True
+                _ = mathtext.split(' ')
+                _ = [i for i in _ if i != '']
+                if len(_) == 0:
+                    operator = True
+                elif len(_) == 1:
+                    # no opposite allowed:if it is '-', then it's already opposite. if it is number, then no opposite allowed.
+                    operator = False
+                else:
+                    if _[-1] == '-':
+                        if _[-2] in '-+/*':
+                            operator = False
+                        elif _[-2] in '0123456789':
+                            operator = True
+                if any(a in mathtext.split(" ")[-1] for a in
+                       functions):  # ["sin","cos","tan",'arcsin',"arccos","arctan","log","in","root"]
                     func = 1
 
         window.fill((0, 191, 255))
@@ -1450,18 +1471,33 @@ while True:
             texts = texts[0:-1]
             if len(mathtext) == 0:
                 continue
-            if mathtext[-1] == ';':
-                mathtext = mathtext[0:-1]
             while mathtext[-1] == " ":
+                mathtext = mathtext[0:-1]
+            if mathtext[-1] == ';':
                 mathtext = mathtext[0:-1]
             if mathtext[-1] == '[':
                 left -= 1
             elif mathtext[-1] == ']':
                 right -= 1
             mathtext = mathtext[0:-1]
+            while mathtext[-1] == ' ':
+                mathtext = mathtext[0:-1]
+            _ = mathtext.split(' ')
+            if len(_) == 0:
+                operator = True
+            elif len(_) == 1:
+                #no opposite allowed:if it is '-', then it's already opposite. if it is number, then no opposite allowed.
+                operator = False
+            else:
+                if _[-1] == '-':
+                    if _[-2] in '-+/*':
+                        operator = False
+                    elif _[-2] in '0123456789':
+                        operator = True
             if any(a in mathtext.split(" ")[-1] for a in
                    functions):  # ["sin","cos","tan",'arcsin',"arccos","arctan","log","in","root"]
                 func = 1
+
 
     if point:
         line3.Buttons[0].enable()

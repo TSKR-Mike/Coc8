@@ -3,7 +3,7 @@ import sys
 from decimal import Decimal
 
 
-def trans_to_RPN(item) -> list:
+def trans_to_RPN(item:list) -> list:
     """
     将字符串转为后缀表达式
     """
@@ -119,13 +119,17 @@ def __calculation(inputting: str, outputting: list, index: int):
         m = outputting[index - 2]
         g = outputting[index - 1]
         #print(m, g, 'calculating+')
-        del outputting[index - 2]
-        del outputting[index - 2]
         if str(g)[0] == '[' and str(g)[-1] == ']':
             g = Calculation(turn_normal_expr_to_internal_expr(str(g)[1:-1]))
         if str(m)[0] == '[' and str(m)[-1] == ']':
             m = Calculation(turn_normal_expr_to_internal_expr(str(m)[1:-1]))
-        outputting[index - 2] = (Decimal(m) + Decimal(g))
+        if m == '+':
+            del outputting[index - 2]
+            outputting[index-1] = Decimal(g)
+        else:
+            del outputting[index - 2]
+            del outputting[index - 2]
+            outputting[index - 2] = Decimal(m) + Decimal(g)
     elif inputting == '-':
         m = outputting[index - 2]
         g = outputting[index - 1]
@@ -406,6 +410,7 @@ def Calculation(item1: str, mode: str = 'RAD'):
         __calculation(p, item, index)
         if p == '+' or p == '-' or p == '*' or p == '/':
             index = 0
+            continue
         index += 1
         if index > len(item):
             index = 0
@@ -421,8 +426,11 @@ def Calculation(item1: str, mode: str = 'RAD'):
 # 计算试例  ∮∭∬∑±∫∰∯
 if __name__ == '__main__':
     #print(trans_to_RPN('9 - ( 1 * 10 + ( 3 + 1 ) ) '.split(' ')))
-    print(Calculation(turn_normal_expr_to_internal_expr('1--4+-(101-2)')))
-    print(turn_normal_expr_to_internal_expr('1--4+-(101-2)'), 'exp')
+    #print(trans_to_RPN('- + 3'.split(' ')))
+    #print(Calculation(turn_normal_expr_to_internal_expr('1--4+-(101-2)')))
+    print(turn_normal_expr_to_internal_expr('1--4-(101-2)'), 'exp')
+    #print(trans_to_RPN('1 - -4 - ( 101 - 2 ) '.split(' ')), 'exp2')
+    #1 - -4 - ( 101 - 2 )
     #print(trans_to_RPN('9 + ( -7 + -2 )'.split(' ')))
     #print(turn_normal_expr_to_internal_expr('(1--2)+3-4-12-(-(3-5))'))
     # ( 1 - -2 ) + 3 - 4 - 12 - ( - ( 3 - 5 ) )
