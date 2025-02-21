@@ -51,6 +51,7 @@ def ComplexToPolar(complex1:complex):
 def load_complex_from_CocComplexInfo(file_name, names):
     if file_name.split('.')[-1] != 'CocComplexInfo':
         message_window.error('unsupported type:'+str(file_name.split('.')[-1])+';except type:CocComplexInfo')
+        return
     with open(file_name, 'r') as matrix_file:
         try:
             all_complexes = []

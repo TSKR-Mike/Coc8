@@ -112,20 +112,20 @@ class CheckBox:
                         self.choices.append(o)
             if mode == 1:
                 if not auto_adjust:
-                    cancel = pygwidgets.TextButton(window, (self.x + 80, (self.y - first_y) + buttons_adjust_length), 'cancel',
+                    cancel = pygwidgets.TextButton(window, (self.x + 80, self.y + buttons_adjust_length), 'cancel',
                                                textColor=(0, 0, 0),
                                                upColor=self.button_up, overColor=self.button_over,
                                                downColor=self.button_down)
-                    done = pygwidgets.TextButton(window, (self.x - 30, (self.y - first_y) + buttons_adjust_length), 'done',
+                    done = pygwidgets.TextButton(window, (self.x - 30, self.y + buttons_adjust_length), 'done',
                                                  textColor=(0, 0, 0),
                                                  upColor=self.button_up, overColor=self.button_over,
                                                  downColor=self.button_down)
                 else:
-                    cancel = pygwidgets.TextButton(window, (self.x + 80, each_add_y*choice_num + buttons_adjust_length), 'cancel',
+                    cancel = pygwidgets.TextButton(window, (self.x + 80, self.y+each_add_y*choice_num + buttons_adjust_length), 'cancel',
                                                    textColor=(0, 0, 0),
                                                    upColor=self.button_up, overColor=self.button_over,
                                                    downColor=self.button_down)
-                    done = pygwidgets.TextButton(window, (self.x - 30, each_add_y*choice_num + buttons_adjust_length), 'done',
+                    done = pygwidgets.TextButton(window, (self.x - 30, self.y+each_add_y*choice_num + buttons_adjust_length), 'done',
                                                  textColor=(0, 0, 0),
                                                  upColor=self.button_up, overColor=self.button_over,
                                                  downColor=self.button_down)
@@ -317,6 +317,15 @@ class CheckBox:
 if __name__ == '__main__':
     import sys
 
+    all_statistic_types = ['mean', 'max', 'min', 'standard deviation', 'mode', 'variance',
+                           'median', 'range', 'percentile', 'skew', 'kurtosis', 'correlation', 'covariance',
+                           'moving average', 'Exponential-Weighted-Moving-Average', 'Z-scores',
+                           'Cumulative Distribution Function',
+                           'Probability Density Function', 'MAD', 'M2', 'info entropy', 'auto-correlation',
+                           'Jackknife-statistics', 'frequency count', 'Median Absolute Deviation Ratio',
+                           'linear-trend', 'trimmed-mean', 'F statistic', 'T statistic', 'P statistic',
+                           'coefficient of variation', 'Pearson correlation coefficient']
+
     window = pygame.display.set_mode((1004, 610))
     clock = pygame.time.Clock()
     pygame.init()
@@ -330,19 +339,9 @@ if __name__ == '__main__':
 
             window.fill((0, 191, 255))
             if n.handleEvent(event):
-                #m = CheckBox(5, ['a', 'b', 'c', 'd', 'e'], 2,
-                 #            window, clock, 120, 30, each_add_x=0, each_add_y=20)
-                a = CheckBox(None,None,None, window=window, clock=clock, levels=[[['a','b','c'], [None], 3, [False,False,False],20,30,0,30, (0, 0, 0)],
-                                                                                 [['a','b','c'], [None], 3, [False,False,False],50,30,0,30, (0, 0, 0)],
-                                                                                 [['a','b','c'], [None], 3, [False,False,False],80,30,0,30, (0, 0, 0)]])
-                m2 = CheckBox(29, ['mean','max','min','standard deviation','mode','variance',
-                                   'median','mode','range','percentile','skew','kurtosis','correlation','covariance',
-                                   'moving average','EWMA','Z-scores','Cumulative Distribution Function',
-                                   'Probability Density Function','MAD','M2','info entropy','auto-correlation',
-                                   'pearson-corr-matrix', 'Jackknife-statistics', 'frequency count', 'Median Absolute Deviation Ratio',
-                                   'linear-trend', 'trimmed-mean'], 29,
-                 window, clock, first_x=40, first_y=30, each_add_x=0, each_add_y=15, auto_adjust=True, buttons_adjust_length=40)
-                print(m2.clicked_choices)
+                charting_sigma_selector = CheckBox(4, ['1 sigma', '2 sigma', '3 sigma', 'mean'], 4,
+                                                   window, clock, first_x=40, first_y=100, each_add_x=0, each_add_y=30,
+                                                   buttons_adjust_length=0, background_color=(90, 90, 150))
             n.draw()
             pygame.display.update()
             clock.tick(30)

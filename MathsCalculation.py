@@ -3,80 +3,6 @@ import sys
 from decimal import Decimal
 
 
-def trans_to_RPN(item:list) -> list:
-    """
-    将字符串转为后缀表达式
-    """
-    List = []
-    math1 = []
-    s = []
-    subtract = False
-    transformed_symbol = False
-    item1 = [i for i in item if len(i) != 0]
-    operator = False
-    for i in item1:
-        if i == '(':
-            operator = True
-            List.append(i)
-            s.append(len(List))
-        elif i == ')':
-            operator = False
-            subtract = False
-            b = s[-1]
-            del s[-1]
-            while len(List) > 0:
-                c = List[-1]
-                if c in '+-*/':
-                    math1.append(c)
-                del List[-1]
-        elif i in ['+', '-', '*', '/']:
-            if i in ['+', '-']: # '-' may appear before '(', in some cases there's need to reverse the symbol from
-                # '-' to '+' because the '-'(in the original formula) is OUTSIDE the parenthesis.
-                if len(List) > 0:
-                    if '-' in List:
-                        if not operator:# means it can not take the opposite of a number
-                            if not transformed_symbol: # means the symbol is original INSTEAD of changed one.
-                                subtract = True
-                            else: # means the symbol '-' comes from the last transformation at this place
-                                # so it is NOT the one inside the formula, so no transformation needed
-                                subtract = False
-                                transformed_symbol = False
-                        else:operator = False
-
-                    c = List[-1]
-                    if c in ['*', '/']:
-                        while len(List) > 0:
-                            last = List[-1]
-                            if last in '+-*/':
-                                math1.append(last)
-                            del List[-1]
-                if subtract and not operator: # isn't taking the opposite
-                    if i == '+':List.append('-')
-                    else:List.append('+')# 'i' is '-' and it is the one inside the formula. so reverse needed.
-                    transformed_symbol = True
-                else:
-                    List.append(i)
-            else:
-                List.append(i)
-
-            if not operator:
-                operator = True
-            else:
-                if i == '-':
-                    operator = False
-
-        else:
-            operator = False
-            math1.append(i)
-    while len(List) > 0:
-        c = List[-1]
-        math1.append(c)
-        del List[-1]
-    for i, j in zip(math1, range(len(math1))):
-        if i == '':
-            del math1[j]
-    return math1
-
 
 def turn_normal_expr_to_internal_expr(item: str|list|tuple):
     loc = 0
@@ -86,7 +12,7 @@ def turn_normal_expr_to_internal_expr(item: str|list|tuple):
     operator = False
     # '-' can only appear after an operator. such as '4 + -2', and '4 - --2' is illegal
     for i in file:
-        if i in ['+', '-', '/', '*', '(', ')']:
+        if i in ['+', '-', '/', '*', '(', ')', '^']:
             if i == '(' or i == ')':
                 operator = True
             if num_left == num_right:
@@ -109,6 +35,11 @@ def turn_normal_expr_to_internal_expr(item: str|list|tuple):
         else:
             operator = False
         loc += 1
+    index = 0
+    for i in file:
+        if i == '':
+            del file[index]
+        index += 1
     return file
 
 
@@ -123,13 +54,9 @@ def __calculation(inputting: str, outputting: list, index: int):
             g = Calculation(turn_normal_expr_to_internal_expr(str(g)[1:-1]))
         if str(m)[0] == '[' and str(m)[-1] == ']':
             m = Calculation(turn_normal_expr_to_internal_expr(str(m)[1:-1]))
-        if m == '+':
-            del outputting[index - 2]
-            outputting[index-1] = Decimal(g)
-        else:
-            del outputting[index - 2]
-            del outputting[index - 2]
-            outputting[index - 2] = Decimal(m) + Decimal(g)
+        del outputting[index - 2]
+        del outputting[index - 2]
+        outputting[index - 2] = Decimal(m) + Decimal(g)
     elif inputting == '-':
         m = outputting[index - 2]
         g = outputting[index - 1]
@@ -167,6 +94,16 @@ def __calculation(inputting: str, outputting: list, index: int):
         del outputting[index - 2]
         del outputting[index - 2]
         outputting[index - 2] = (Decimal(m) * Decimal(g))
+    elif inputting == '^':
+        m = outputting[(index - 2)]
+        g = outputting[(index - 1)]
+        if m == '^':
+            del outputting[index - 2]
+            outputting[index - 1] = Decimal(g)
+        else:
+            del outputting[index - 2]
+            del outputting[index - 2]
+            outputting[index - 2] = (Decimal(m) ** Decimal(g))
     else:
         pass
 
@@ -206,7 +143,7 @@ def Calculation(item1: str, mode: str = 'RAD'):
         pass
     item2 = item1
     item1 = str(item2).split(' ')
-    item = trans_to_RPN(item1)
+    item = ReversedPolishNotation(item1)
     #print('after trans:', item)
     for i in item:
         r = 0
@@ -215,32 +152,6 @@ def Calculation(item1: str, mode: str = 'RAD'):
                 r += 1
         if i.count('.') > r + 1:
             return 'ERROR! Unmatched "." !'
-    for i in item:
-        if '^' in i:
-            if not any(
-                    [k in i for k in ["sin", "cos", "tan", 'arcsin', "arccos", "arctan", "log", "ln", "root", 'min']]):
-                if '[' not in i and ']' not in i:
-                    item[item.index(i)] = Decimal(i.split('^')[0]) ** Decimal(i.split('^')[1])
-                else:
-                    a = str(i.split('^')[0])
-                    b = str(i.split('^')[1])
-                    if '[' in a and ']' in a:
-                        a = Calculation(turn_normal_expr_to_internal_expr(a), mode)
-                    if '[' in b and ']' in b:
-                        b = Calculation(turn_normal_expr_to_internal_expr(b), mode)
-                    item[item.index(i)] = Decimal(a) ** Decimal(b)
-            else:
-                k = i
-                while '[' in k and ']' in k:
-                    k = k.split('[')[1][0:-1]
-                a = str(k.split('^')[0])
-                b = str(k.split('^')[1])
-                if '[' in a and ']' in a:
-                    a = Calculation(turn_normal_expr_to_internal_expr(a), mode)
-                if '[' in b and ']' in b:
-                    b = Calculation(turn_normal_expr_to_internal_expr(b), mode)
-                item[item.index(i)] = item[item.index(i)].replace(k, str(Decimal(a) ** Decimal(b)))
-
     # 函数检测
     loc = 0
     for j in item:
@@ -422,13 +333,48 @@ def Calculation(item1: str, mode: str = 'RAD'):
     return n
 
 
+def ReversedPolishNotation(tokens:list[str]):
+    precedence = {'+': 0, '-': 0, '*': 1, '/': 1, '^': 2}
+    associativity = {'+': 'left', '-': 'left', '*': 'left', '/': 'left', '^': 'right'}
+    output = []
+    stack = []
+
+    for token in tokens:
+        if token == '':continue
+        # determine if it is digits
+        if token.replace('.', '', 1).lstrip('-').isdigit():
+            output.append(token)
+        elif token == '(':
+            stack.append(token)
+        elif token == ')':
+            # pop all the elements until meet '('
+            while stack and stack[-1] != '(':
+                output.append(stack.pop())
+            stack.pop()  # ign '('
+        else:
+            # handle operates
+            while stack and stack[-1] != '(' and (
+                    precedence[token] < precedence.get(stack[-1], 0) or
+                    (precedence[token] == precedence.get(stack[-1], 0) and associativity[token] == 'left')
+            ):
+                output.append(stack.pop())
+            stack.append(token)
+
+    # pop the rest (of operators)
+    while stack:
+        output.append(stack.pop())
+
+    return output
+
 #
 # 计算试例  ∮∭∬∑±∫∰∯
 if __name__ == '__main__':
     #print(trans_to_RPN('9 - ( 1 * 10 + ( 3 + 1 ) ) '.split(' ')))
-    #print(trans_to_RPN('- + 3'.split(' ')))
-    #print(Calculation(turn_normal_expr_to_internal_expr('1--4+-(101-2)')))
-    print(turn_normal_expr_to_internal_expr('1--4-(101-2)'), 'exp')
+    exp = turn_normal_expr_to_internal_expr('1-(1-1)-(3-2+2-3)').split(' ')
+    exp2 = ' ( 1 + 1 )  ^  ( 1 + 1 ) '.split(' ')
+    print(exp, ':', ReversedPolishNotation(exp2))
+    #print((trans_to_RPN(turn_normal_expr_to_internal_expr('1-(1-1)-(3-2+2-3)').split(' '))), 'exp')
+    print(Calculation('2 ^  ( 1 + 1 ) '))
     #print(trans_to_RPN('1 - -4 - ( 101 - 2 ) '.split(' ')), 'exp2')
     #1 - -4 - ( 101 - 2 )
     #print(trans_to_RPN('9 + ( -7 + -2 )'.split(' ')))

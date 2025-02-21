@@ -312,7 +312,7 @@ def select_curr_matrix(window, all_matrix, comments=''):
                                            promptTextColor=(0, 0, 0), inputTextColor=(0, 0, 0))
         all_names = [curr[0] for curr in all_matrix]
         if name not in all_names:
-            message_window.error('the name "' + name + '" is NOT included in all matrix')
+            message_window.error('the name "' + str(name) + '" is NOT included in all matrix')
             return
         for curr_complex in all_matrix:
             if curr_complex[0] == name:

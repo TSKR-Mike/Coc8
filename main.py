@@ -11,7 +11,7 @@ def draw_all():
     """
     draw all the buttons, text fields and else things.
     """
-    global line1, line2, line3, line4_1, line4_2, line4_2, line5, line6, line7
+    global line1, line2, line3, line4_1, line4_2, line4_2, line5, line6, line7, warning_text
     global answertext, mode_text, backspace, text
     text.draw()
     answertext.draw()
@@ -25,6 +25,7 @@ def draw_all():
     line6.drawAllButtons()
     line7.drawAllButtons()
     backspace.draw()
+    warning_text.draw()
 
 def get_number_key(event):
     # 获取修饰键状态（Shift, Ctrl, Alt 等）
@@ -120,7 +121,7 @@ window = pygame.display.set_mode((1004, 610), DOUBLEBUF)
 window.fill((0, 191, 255))
 icon = pygame.image.load("icon.png")
 pygame.display.set_icon(icon)
-pygame.display.set_caption('Collections of calculation')
+pygame.display.set_caption('Collections of Calculation')
 pygame.display.update()
 loading_obj = DotCircledProgressBar(window, clock, (502, 300), 100, 10, (0, 191, 255))
 loading_obj.run()
@@ -221,6 +222,8 @@ y = sympy.symbols('y')
 z = sympy.symbols('z')
 mathtext = ''
 font_path = 'fonts/JetBrainsMono-Light.ttf'
+warning_text = pygwidgets.DisplayText(window, (0, 530), '', font_path, 20, 1004, backgroundColor=(0, 191, 255),
+                                      height=31)
 line1 = ButtonCenter(None, (0, 0, 0), (90, 90, 150), (0, 50, 100), (20, 0, 80), 16,
                      ['0', '1', '2', '3', '4', '5', '6', '7', '8', '9', '+', '-', '*', '/', '=', 'C'],
                      window, 60, 60, 0, 92, 62, 0, font=font_path, font_size=18, callbacks=None)
@@ -412,7 +415,6 @@ while True:
                     texts += ')'
                     if not func:
                         if left > right:  # 当前输入的是函数的参数
-
                             mathtext += ')'
                         else:
                             mathtext += ' ) '
@@ -420,8 +422,6 @@ while True:
                         mathtext += ']'
                         right += 1
                         if left == right:  # means exit from present function
-                            left = 0
-                            right = 0
                             func = 0
                     operator = False
                 elif symbol == '!':
@@ -432,9 +432,13 @@ while True:
                 elif symbol == '^':
                     point = True
                     texts += '^'
-                    mathtext += '^'
+                    if left > right:
+                        mathtext += '^'
+                    else:
+                        mathtext += ' ^ '
                     operator = True
-                continue
+                else:
+                    continue
             if event.key == pygame.K_BACKSPACE:
                 texts = texts[0:-1]
                 if len(mathtext) == 0:
@@ -523,8 +527,11 @@ while True:
         if len(answer) > 65:
             #print('over')
             # the answer passes the display limit
+            warning_text.setValue('The answer has '+str(len(answer))+' digits, current showing:'+str(answer_start_index)+'~'+str(65+answer_start_index))
             _ = answer
             answertext.setValue(_[answer_start_index:66+answer_start_index])
+        else:
+            warning_text.setValue('')
         draw_all()
         event_proceeded = False
 
@@ -581,6 +588,7 @@ while True:
                             mathtext += ' / '  # 在[]外
                             func = 0
                     elif INDEX == 14:
+                        #print(mathtext)
                         try:
                             if mode == 'RAD':
                                 text_ = Calculation(mathtext, 'RAD')
@@ -633,8 +641,6 @@ while True:
                         mathtext += ']'
                         right += 1
                         if left == right:  # means exit from present function
-                            left = 0
-                            right = 0
                             func = 0
                 elif INDEX == 2:
                     MEMORY = (texts, mathtext)
@@ -720,7 +726,11 @@ while True:
                 elif INDEX == 3:
                     point = True
                     texts += '^'
-                    mathtext += '^'
+                    if left > right:
+                        mathtext += '^'
+                    else:
+                        mathtext += ' ^ '
+                    operator = True
                 elif INDEX == 4:
                     formula = pyghelpers.textAnswerDialog(window, (200, 100, 800, 200),
                                                           'input you formula here( y/z = f(x /x,y)=', 'OK',
@@ -1057,7 +1067,7 @@ while True:
                     Answer = None
                     for c2 in range(int(num)):
                         check = CheckBox(3, ['to x', 'to y', 'to z'], 1, window, clock, 300, 300, each_add_x=0,
-                                         each_add_y=10)
+                                         each_add_y=20, bkg_height_adj=100)
                         if len(check.clicked_choices) == 1:
                             check = str(check.clicked_choices[0])
                         else:
@@ -1069,21 +1079,21 @@ while True:
                         z = sympy.symbols('z')
                         formula = sympy.sympify(formula)
                         if c2 == 0:
-                            if check == '1':
+                            if check == '0':
                                 Answer = formula.diff(x, 1)
-                            elif check == '2':
+                            elif check == '1':
                                 Answer = formula.diff(y, 1)
-                            elif check == '3':
+                            elif check == '2':
                                 Answer = formula.diff(z, 1)
                             else:
                                 answertext.setValue('')
                                 break
                         else:
-                            if check == '1':
+                            if check == '0':
                                 Answer = Answer.diff(x, 1)
-                            elif check == '2':
+                            elif check == '1':
                                 Answer = Answer.diff(y, 1)
-                            elif check == '3':
+                            elif check == '2':
                                 Answer = Answer.diff(z, 1)
                             else:
                                 answertext.setValue('')
@@ -1224,7 +1234,7 @@ while True:
                                                           'CANCEL', backgroundColor=(90, 90, 150),
                                                           promptTextColor=(0, 0, 0),
                                                           inputTextColor=(0, 0, 0))
-                    if formula != None:
+                    if formula is not None:
                         try:
                             if '=' in formula:
                                 message_window.error("Can't simplify a equation!!!")
@@ -1238,7 +1248,7 @@ while True:
                         message_window.error("Failed to simplify due to an empty formula was given")
                 elif INDEX == 3:
                     formula = pyghelpers.textAnswerDialog(window, (200, 100, 800, 200),
-                                                          'input the formula(s) that you want to solve(equals 0), '
+                                                          'input the formula(s) that you want to solve, '
                                                           'split with ";"',
                                                           'OK',
                                                           'CANCEL', backgroundColor=(90, 90, 150),
@@ -1250,7 +1260,7 @@ while True:
                         for current, index in zip(all_formulas, range(len(all_formulas))):
                             if '=' in current:
                                 left_part, right_part = current.split('=')[0], current.split('=')[1]
-                                all_formulas[index] = left_part + '-(' + right_part + ')'
+                                all_formulas[index] = '('+left_part+')-(' + right_part + ')'
                         symbols = pyghelpers.textAnswerDialog(window, (200, 100, 800, 200),
                                                               'input the symbol(s) that you use in the formula:' + str(
                                                                   formula) + ',split with ";"',
