@@ -15,16 +15,7 @@ import matplotlib.backends.backend_agg as agg
 import pylab
 from mpl_toolkits.mplot3d import Axes3D
 
-all_colours = [(0, 0, 0), (0, 0, 64), (0, 0, 128), (0, 0, 192), (0, 64, 0), (0, 64, 64), (0, 64, 128), (0, 64, 192),
-               (0, 128, 0), (0, 128, 64), (0, 128, 128), (0, 128, 192), (0, 192, 0), (0, 192, 64), (0, 192, 128),
-               (0, 192, 192), (64, 0, 0), (64, 0, 64), (64, 0, 128), (64, 0, 192), (64, 64, 0), (64, 64, 64),
-               (64, 64, 128), (64, 64, 192), (64, 128, 0), (64, 128, 64), (64, 128, 128), (64, 128, 192), (64, 192, 0),
-               (64, 192, 64), (64, 192, 128), (64, 192, 192), (128, 0, 0), (128, 0, 64), (128, 0, 128), (128, 0, 192),
-               (128, 64, 0), (128, 64, 64), (128, 64, 128), (128, 64, 192), (128, 128, 0), (128, 128, 64),
-               (128, 128, 128), (128, 128, 192), (128, 192, 0), (128, 192, 64), (128, 192, 128), (128, 192, 192),
-               (192, 0, 0), (192, 0, 64), (192, 0, 128), (192, 0, 192), (192, 64, 0), (192, 64, 64), (192, 64, 128),
-               (192, 64, 192), (192, 128, 0), (192, 128, 64), (192, 128, 128), (192, 128, 192), (192, 192, 0),
-               (192, 192, 64), (192, 192, 128), (192, 192, 192)]
+all_colours = ['aliceblue', 'antiquewhite', 'aqua', 'aquamarine', 'azure', 'beige', 'bisque', 'black', 'blanchedalmond', 'blue', 'blueviolet', 'brown', 'burlywood', 'cadetblue', 'chartreuse', 'chocolate', 'coral', 'cornflowerblue', 'cornsilk', 'crimson', 'cyan', 'darkblue', 'darkcyan', 'darkgoldenrod', 'darkgray', 'darkgreen', 'darkgrey', 'darkkhaki', 'darkmagenta', 'darkolivegreen', 'darkorange', 'darkorchid', 'darkred', 'darksalmon', 'darkseagreen', 'darkslateblue', 'darkslategray', 'darkslategrey', 'darkturquoise', 'darkviolet', 'deeppink', 'deepskyblue', 'dimgray', 'dimgrey', 'dodgerblue', 'firebrick', 'floralwhite', 'forestgreen', 'fuchsia', 'gainsboro', 'ghostwhite', 'gold', 'goldenrod', 'gray', 'green', 'greenyellow', 'grey', 'honeydew', 'hotpink', 'indianred', 'indigo', 'ivory', 'khaki', 'lavender', 'lavenderblush', 'lawngreen', 'lemonchiffon', 'lightblue', 'lightcoral', 'lightcyan', 'lightgoldenrodyellow', 'lightgray', 'lightgreen', 'lightgrey', 'lightpink', 'lightsalmon', 'lightseagreen', 'lightskyblue', 'lightslategray', 'lightslategrey', 'lightsteelblue', 'lightyellow', 'lime', 'limegreen', 'linen', 'magenta', 'maroon', 'mediumaquamarine', 'mediumblue', 'mediumorchid', 'mediumpurple', 'mediumseagreen', 'mediumslateblue', 'mediumspringgreen', 'mediumturquoise', 'mediumvioletred', 'midnightblue', 'mintcream', 'mistyrose', 'moccasin', 'navajowhite', 'navy', 'oldlace', 'olive', 'olivedrab', 'orange', 'orangered', 'orchid', 'palegoldenrod', 'palegreen', 'paleturquoise', 'palevioletred', 'papayawhip', 'peachpuff', 'peru', 'pink', 'plum', 'powderblue', 'purple', 'rebeccapurple', 'red', 'rosybrown', 'royalblue', 'saddlebrown', 'salmon', 'sandybrown', 'seagreen', 'seashell', 'sienna', 'silver', 'skyblue', 'slateblue', 'slategray', 'slategrey', 'snow', 'springgreen', 'steelblue', 'tan', 'teal', 'thistle', 'tomato', 'turquoise', 'violet', 'wheat', 'white', 'whitesmoke', 'yellow', 'yellowgreen']
 sensitivity = 0.5
 POINT, LINE, ARROW = 0, 1, 2
 

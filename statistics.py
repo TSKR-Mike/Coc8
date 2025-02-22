@@ -1879,7 +1879,7 @@ def data_comparison(window, clock):
             message_window.error('There is no available data, this time of comparison skips.')
             continue
         charts_type = CheckBox(8, ['hist', 'box', 'violin', 'error bar', 'hist2d', 'hexbin', 'plot', 'scatter'], 8,
-                     window, clock, first_x=40, first_y=100, each_add_x=0, each_add_y=30, buttons_adjust_length=100,
+                     window, clock, first_x=40, first_y=100, each_add_x=0, each_add_y=30, buttons_adjust_length=0,
                      background_color=(90, 90, 150))
         curr_fig = fig.add_subplot(charts_x_num, charts_y_num, 1)
         if len(charts_type.clicked_choices) == 0:
