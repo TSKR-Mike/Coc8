@@ -64,54 +64,6 @@ def get_calcu_symbol_key(event):
         if key_name == '/':return '/'
         elif key_name == '.':return '.'
 
-def show_user_text():
-    global usr_showing_maths_texts, text, text_length_warned
-    if len(texts) <= 32:
-        text = pygwidgets.DisplayText(window, (0, 0), texts, font_path, 50, 1004, backgroundColor=(255, 255, 255),
-                                      height=90)
-    elif len(texts) <= 42:
-        text = pygwidgets.DisplayText(window, (0, 0), texts, font_path, 40, 1004, backgroundColor=(255, 255, 255),
-                                      height=90)
-    elif len(texts) <= 55:
-        text = pygwidgets.DisplayText(window, (0, 0), texts, font_path, 30, 1004, backgroundColor=(255, 255, 255),
-                                      height=90)
-    elif len(texts) <= 110:
-        # 双行显示
-        text = pygwidgets.DisplayText(window, (0, 0), texts[0:55], font_path, 30, 1004, backgroundColor=(255, 255, 255),
-                                      height=31)
-        text2 = pygwidgets.DisplayText(window, (0, 31), texts[55:111], font_path, 30, 1004,
-                                       backgroundColor=(255, 255, 255),
-                                       height=59)
-        text2.draw()
-    else:
-        text = pygwidgets.DisplayText(window, (0, 0), texts[0:55], font_path, 30, 1004,
-                                      backgroundColor=(255, 255, 255),
-                                      height=31)
-        over = len(texts) - 165
-        if len(texts) > 165 and not text_length_warned:
-            message_window.warning(
-                "The length of the string that you input is longer than the max number(165):" + str(len(texts)) +
-                ", suggesting canceling the formula into a shorter one, or the screen won't be able to show all characters.")
-            text_length_warned = True
-        if over <= 0:
-            text_length_warned = False
-            text.setValue(texts[0:56])
-            text2 = pygwidgets.DisplayText(window, (0, 30), texts[56:112], font_path, 30, 1004,
-                                           backgroundColor=(255, 255, 255),
-                                           height=30)
-            text3 = pygwidgets.DisplayText(window, (0, 60), texts[112:165], font_path, 30, 1004,
-                                           backgroundColor=(255, 255, 255),
-                                           height=30)
-        else:
-            text.setValue(texts[over:56 + over])
-            text2 = pygwidgets.DisplayText(window, (0, 30), texts[56 + over:112 + over], font_path, 30, 1004,
-                                           backgroundColor=(255, 255, 255),
-                                           height=30)
-            text3 = pygwidgets.DisplayText(window, (0, 60), texts[112 + over:165 + over], font_path, 30, 1004,
-                                           backgroundColor=(255, 255, 255),
-                                           height=30)
-        text2.draw()
-        text3.draw()
 
 
 # 加载动画
@@ -211,7 +163,7 @@ loading_obj.done()
 message_window = Message_window()
 xticks_angle = -45
 mode = 'DEG'
-functions = ["sin", "cos", "tan", 'arcsin', "arccos", "arctan", "log", "ln", "root", 'min']
+functions = ["sin", "cos", "tan", 'arcsin', "arccos", "arctan", "log", "ln", "√", 'min']
 plt.rcParams['font.family'] = 'SimHei'; plt.rcParams['axes.unicode_minus'] = False
 ax.spines['top'].set_color('none'); ax.spines['right'].set_color('none')
 ax.spines['left'].set_position(('data', 0.5)); ax.spines['bottom'].set_position(('data', 0))
@@ -697,7 +649,7 @@ while True:
                     operator = True
                 elif INDEX == 15:
                     usr_showing_maths_texts += '√'
-                    mathtext += 'root'
+                    mathtext += '√'
                     func = 1
                     operator = True
                 event_proceeded = True

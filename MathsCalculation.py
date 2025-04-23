@@ -241,11 +241,11 @@ def Calculation(item1: str, mode: str = 'RAD'):
                 if ';' in str(j):
                     return 'ERROR'
                 else:
-                    if 'root' in str(j):
+                    if '√' in str(j):
                         if not (('[' in j) and (']' in j)):
                             try:
-                                a = j.split('root')[0]
-                                b = j.split('root')[1]
+                                a = j.split('√')[0]
+                                b = j.split('√')[1]
                                 try:
                                     item[loc] = int(b) ** (1 / int(a))
                                 except ValueError:
@@ -253,8 +253,8 @@ def Calculation(item1: str, mode: str = 'RAD'):
                             except ValueError:
                                 return 'TYPE ERROR,must be int or float'
                         else:
-                            a = j.split('root')[0]
-                            b = j.split('root')[1]
+                            a = j.split('√')[0]
+                            b = j.split('√')[1]
                             try:
 
                                 b = b[1:-1]
@@ -374,7 +374,7 @@ if __name__ == '__main__':
     exp2 = ' ( 1 + 1 )  ^  ( 1 + 1 ) '.split(' ')
     print(exp, ':', ReversedPolishNotation(exp2))
     #print((trans_to_RPN(turn_normal_expr_to_internal_expr('1-(1-1)-(3-2+2-3)').split(' '))), 'exp')
-    print(Calculation('2 ^  ( 1 + 1 ) '))
+    print(Calculation('2√2','RAD'))
     #print(trans_to_RPN('1 - -4 - ( 101 - 2 ) '.split(' ')), 'exp2')
     #1 - -4 - ( 101 - 2 )
     #print(trans_to_RPN('9 + ( -7 + -2 )'.split(' ')))
