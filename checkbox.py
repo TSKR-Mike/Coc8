@@ -1,6 +1,9 @@
 import pygame
 import pygwidgets
+
+from ButtonMgr import RectButton
 from choices_center import ChoiceCenter
+
 
 
 class Levels_Agreements_Error(Exception):
@@ -23,11 +26,12 @@ class CheckBox:
     -------------------------------
     """
 
-    def __init__(self, choice_num, choices_text, max_choices, window, clock, first_x=None,
-                 first_y=None, loc_list_x=None, loc_list_y=None, each_add_x=None, each_add_y=None,
+    def __init__(self, choice_num, choices_text, max_choices, window, clock, first_x:int=None,
+                 first_y:int=None, loc_list_x:list[int]=None, loc_list_y:list[int]=None, each_add_x:int=None, each_add_y:int=None,
                  button_color=((90, 90, 150), (0, 50, 100), (20, 0, 80)),
                  background_color=(120, 120, 150), auto_adjust=False,buttons_adjust_length=50,levels=None, drawFuncs:list=None, eventHandlerFuncs:list=None,
-                 bkg_width_adj:int=300, bkg_height_adj:int=120):
+                 bkg_width_adj:int=300, bkg_height_adj:int=120, font_name:str=None, font_size:int=20,
+                 button_border_width:int=0, button_border_color=(0, 0, 0)):
         """
 
         :param choice_num:     ┐
@@ -43,6 +47,8 @@ class CheckBox:
                         <each_add_y> = NONE,<choices_text_colours> = (0,0,0) (or list by the user),
                         <level_text> = NONE),...)
         levels must be separate for at least 40(each choice <= 3 chars), add a char(base on 3 chars) means distance between the levels adds 5.
+
+        :param button_color:#up, over and down
 
         """
         # --------------ERRORsThrowing----------------------------------------#
@@ -66,6 +72,8 @@ class CheckBox:
                                                   'agreements completely')
 
         self.clock = clock
+        self.font_name = font_name
+        self.font_size = font_size
         if levels is None:
             self.choice_text = choices_text
             self.choice_num = choice_num
@@ -98,7 +106,8 @@ class CheckBox:
                         raise TypeError
 
                     else:
-                        o = pygwidgets.TextRadioButton(window, (self.x, self.y), text=self.choice_text[i], group=1)
+                        o = pygwidgets.TextRadioButton(window, (self.x, self.y), text=self.choice_text[i], group=1,
+                                                       fontName=self.font_name, fontSize=self.font_size)
                         self.choices.append(o)
                     self.x += each_add_x
                     self.y += each_add_y
@@ -108,42 +117,38 @@ class CheckBox:
                         raise TypeError
                     else:
                         o = pygwidgets.TextRadioButton(window, (loc_list_x[i], loc_list_y[i]), text=self.choice_text[i],
-                                                       group=1)
+                                                       group=1, fontName=self.font_name, fontSize=self.font_size)
                         self.choices.append(o)
             if mode == 1:
                 if not auto_adjust:
-                    cancel = pygwidgets.TextButton(window, (self.x + 80, self.y + buttons_adjust_length), 'cancel',
-                                               textColor=(0, 0, 0),
-                                               upColor=self.button_up, overColor=self.button_over,
-                                               downColor=self.button_down)
-                    done = pygwidgets.TextButton(window, (self.x - 30, self.y + buttons_adjust_length), 'done',
-                                                 textColor=(0, 0, 0),
-                                                 upColor=self.button_up, overColor=self.button_over,
-                                                 downColor=self.button_down)
+                    cancel = RectButton('cancel', window, 100, self.x + 80, self.y + buttons_adjust_length, upColor=self.button_up,
+                                        overColor=self.button_over, downColor=self.button_down, fontName=self.font_name, fontSize=self.font_size,
+                                        border_width=button_border_width, border_color=button_border_color)
+
+                    done = RectButton('done', window, 100, self.x - 30, self.y + buttons_adjust_length, upColor=self.button_up,
+                                      overColor=self.button_over, downColor=self.button_down, fontName=self.font_name, fontSize=self.font_size,
+                                      border_width=button_border_width, border_color=button_border_color)
+
                 else:
-                    cancel = pygwidgets.TextButton(window, (self.x + 80, self.y+each_add_y*choice_num + buttons_adjust_length), 'cancel',
-                                                   textColor=(0, 0, 0),
-                                                   upColor=self.button_up, overColor=self.button_over,
-                                                   downColor=self.button_down)
-                    done = pygwidgets.TextButton(window, (self.x - 30, self.y+each_add_y*choice_num + buttons_adjust_length), 'done',
-                                                 textColor=(0, 0, 0),
-                                                 upColor=self.button_up, overColor=self.button_over,
-                                                 downColor=self.button_down)
-                backGround = pygwidgets.TextButton(window, (first_x - 50, first_y - 30), '',
-                                                   upColor=self.background_color,downColor=self.background_color,overColor=self.background_color, height=abs(first_y - self.y) + bkg_height_adj,
-                                                   width=abs(first_x - self.x) + bkg_width_adj)
+                    cancel = RectButton('cancel', window, 100, self.x + 80, self.y + each_add_y * choice_num + buttons_adjust_length, upColor=self.button_up,
+                                        overColor=self.button_over, downColor=self.button_down, fontName=self.font_name, fontSize=self.font_size,
+                                        border_width=button_border_width, border_color=button_border_color)
+
+                    done = RectButton('done', window, 100, self.x - 30, self.y + each_add_y * choice_num + buttons_adjust_length, upColor=self.button_up,
+                                      overColor=self.button_over, downColor=self.button_down, fontName=self.font_name, fontSize=self.font_size,
+                                      border_width=button_border_width, border_color=button_border_color)
+
+
             else:
-                cancel = pygwidgets.TextButton(window, (loc_list_x[-1] + 80, (loc_list_y[-1] - first_y) + buttons_adjust_length), 'cancel',
-                                               textColor=(0, 0, 0),
-                                               upColor=self.button_up, overColor=self.button_over,
-                                               downColor=self.button_down)
-                done = pygwidgets.TextButton(window, (loc_list_x[-1] - 30, (loc_list_y[-1] - first_y) + buttons_adjust_length), 'done',
-                                             textColor=(0, 0, 0),
-                                             upColor=self.button_up, overColor=self.button_over,
-                                             downColor=self.button_down)
-                backGround = pygwidgets.TextButton(window, (first_x, first_y), '',
-                                                   upColor=self.background_color, height=abs(first_y - loc_list_y[-1]),
-                                                   width=abs(first_x - loc_list_x[-1]),downColor=self.background_color,overColor=self.background_color)
+                cancel = RectButton('cancel', window, 100, loc_list_x[-1] + 80, loc_list_y[-1] + buttons_adjust_length, upColor=self.button_up,
+                                    overColor=self.button_over, downColor=self.button_down, fontName=self.font_name, fontSize=self.font_size,
+                                    border_width=button_border_width, border_color=button_border_color)
+
+                done = RectButton('done', window, 100, loc_list_x[-1] - 30, loc_list_y[-1] + buttons_adjust_length, upColor=self.button_up,
+                                  overColor=self.button_over, downColor=self.button_down, fontName=self.font_name, fontSize=self.font_size,
+                                  border_width=button_border_width, border_color=button_border_color)
+
+
         else:  # user set the levels
             if max(len(i) for i in levels) < 7:
                 min_x = min([min(k) for k in [r[0] for r in [m[1] for m in levels]]])
@@ -152,18 +157,14 @@ class CheckBox:
                 max_x = max([max(k) for k in [r[0] for r in [m[1] for m in levels]]])
                 min_y = min([min(k) for k in [r[1] for r in [m[1] for m in levels]]])
                 max_y = max([max(k) for k in [r[1] for r in [m[1] for m in levels]]])
-                cancel = pygwidgets.TextButton(window, (min_x + 80, (max_y - min_y) + buttons_adjust_length), 'cancel',
-                                               textColor=(0, 0, 0),
-                                               upColor=self.button_up, overColor=self.button_over,
-                                               downColor=self.button_down)
-                done = pygwidgets.TextButton(window, (min_x - 30, (max_y - min_y) + buttons_adjust_length), 'done',
-                                             textColor=(0, 0, 0),
-                                             upColor=self.button_up, overColor=self.button_over,
-                                             downColor=self.button_down)
-                backGround = pygwidgets.TextButton(window, (min_x - 50, min_y - 30), '',
-                                                   upColor=self.background_color,
-                                                   height=max_y - min_y + bkg_height_adj,
-                                                   width=max_x - min_x + bkg_width_adj,downColor=self.background_color,overColor=self.background_color)
+                cancel = RectButton('cancel', window, 100, min_x + 80, (max_y - min_y) + buttons_adjust_length, upColor=self.button_up,
+                                    overColor=self.button_over, downColor=self.button_down, fontName=self.font_name, fontSize=self.font_size,
+                                    border_width=button_border_width, border_color=button_border_color)
+
+                done = RectButton('done', window, 100, min_x - 30, (max_y - min_y) + buttons_adjust_length, upColor=self.button_up,
+                                  overColor=self.button_over, downColor=self.button_down, fontName=self.font_name, fontSize=self.font_size,
+                                  border_width=button_border_width, border_color=button_border_color)
+
             elif type(levels[0][4]) == type(levels[0][5]) == type(levels[0][6]) == type(levels[0][7]) == int:
                 # start x,y and each add x,y is filled
                 all_xs, all_ys = [], []
@@ -181,23 +182,17 @@ class CheckBox:
                 min_y = min(all_ys)
                 max_y = max(all_ys)
 
-                cancel = pygwidgets.TextButton(window, (min_x + 80, (max_y - min_y) + buttons_adjust_length), 'cancel',
-                                               textColor=(0, 0, 0),
-                                               upColor=self.button_up, overColor=self.button_over,
-                                               downColor=self.button_down)
-                done = pygwidgets.TextButton(window, (min_x - 30, (max_y - min_y) + buttons_adjust_length), 'done',
-                                             textColor=(0, 0, 0),
-                                             upColor=self.button_up, overColor=self.button_over,
-                                             downColor=self.button_down)
-                backGround = pygwidgets.TextButton(window, (min_x - 50, min_y - 30), '',
-                                                   upColor=self.background_color,
-                                                   height=max_y - min_y + bkg_height_adj,
-                                                   width=max_x - min_x + bkg_width_adj,downColor=self.background_color,overColor=self.background_color)
+                cancel = RectButton('cancel', window, 100, min_x + 80, (max_y - min_y) + buttons_adjust_length, upColor=self.button_up,
+                                    overColor=self.button_over, downColor=self.button_down, fontName=self.font_name, fontSize=self.font_size,
+                                    border_width=button_border_width, border_color=button_border_color)
+                done = RectButton('done', window, 100, min_x - 30, (max_y - min_y) + buttons_adjust_length, upColor=self.button_up,
+                                  overColor=self.button_over, downColor=self.button_down, fontName=self.font_name, fontSize=self.font_size,
+                                  border_width=button_border_width, border_color=button_border_color)
+
             for i,num in zip(levels,range(len(levels))):
                 if len(i) >= 8:
                     if type(i[4]) == type(i[5]) == type(i[6]) == type(i[7]) == int:
                         choices_texts = i[0]
-                        max_num = i[2]
                         f_x = i[4]
                         f_y = i[5]
                         add_x = i[6]
@@ -205,49 +200,44 @@ class CheckBox:
                         text_colours = None
                         if len(i) == 10:
                             text_colours = i[8]
-                            level_text = i[9]
                         else:
                             if len(i) > 8:
                                 if len(i[8]) == 3:
                                     text_colours = i[8]
                                 elif len(i) == 9:
-                                    level_text = i[8]
                                     text_colours = [(0,0,0) for a in range(len(choices_texts))]
                             else:
                                 text_colours=(0, 0, 0)
                         if text_colours is None:
                             new = ChoiceCenter(window, None, choices_texts, i[3], len(choices_texts),
-                                       firstlocX=f_x,firstlocY=f_y,eachAddX=add_x,eachAddY=add_y)
+                                       firstlocX=f_x,firstlocY=f_y,eachAddX=add_x,eachAddY=add_y, fontName=self.font_name, fontSize=self.font_size)
                         else:
                             new = ChoiceCenter(window, None, choices_texts, i[3],
-                                           len(choices_texts), firstlocX=f_x, firstlocY=f_y, eachAddX=add_x, eachAddY=add_y,text_color=text_colours)
-                        self.choices.append(new)  #don`t forget to call the "check()" method
+                                           len(choices_texts), firstlocX=f_x, firstlocY=f_y, eachAddX=add_x, eachAddY=add_y,text_color=text_colours
+                                               , fontName=self.font_name, fontSize=self.font_size)
+                        self.choices.append(new)
                 else:
                     choices_texts = i[0]
                     max_num = i[2]
                     loc = [(x, y) for x,y in i[1]]
                     if len(i) == 6:
                         text_colours = i[3]
-                        level_text = i[4]
-                        Level_text = pygwidgets.DisplayText(window,(i[1][0][0], i[1][0][1]+20),level_text)
                         new = ChoiceCenter(window, loc, choices_texts,i[3],len(choices_texts),max_num
-                                           ,text_color=text_colours)
+                                           ,text_color=text_colours, fontName=self.font_name, fontSize=self.font_size)
                     else:
                         if len(i) > 4:
                             if len(i[4][0]) == 3:
                                 text_colours = i[3]
                                 new = ChoiceCenter(window, loc, choices_texts,i[3],len(choices_texts),max_num
-                                               ,text_color=text_colours)
+                                               ,text_color=text_colours, fontName=self.font_name, fontSize=self.font_size)
                             else:
-                                level_text = i[4]
                                 text_colours = [(0,0,0) for a in range(len(choices_texts))]
-                                Level_text = pygwidgets.DisplayText(window, (i[1][0][0], i[1][0][1] + 20), level_text)
                                 new = ChoiceCenter(window, loc, choices_texts,i[3],len(choices_texts),max_num
-                                               ,text_color=text_colours)
+                                               ,text_color=text_colours, fontName=self.font_name, fontSize=self.font_size)
                         else:
                             new = ChoiceCenter(window, loc, choices_texts, i[3],
-                                               len(i[0]), max_num)
-                    self.choices.append(new)  #don`t forget to call the "check()" method
+                                               len(i[0]), max_num, fontName=self.font_name, fontSize=self.font_size)
+                    self.choices.append(new)
         Quit = False
         while not Quit:
             for event in pygame.event.get():
@@ -300,7 +290,29 @@ class CheckBox:
                 if drawFuncs is not None:
                     for func in drawFuncs:
                         func()
-                backGround.draw()
+                #backGround.draw()
+                if levels is None:
+
+                    if mode==1:
+                        pygame.draw.rect(window, (100, 100, 100, 128),
+                                         (first_x-45, first_y-25, abs(first_x - self.x) + bkg_width_adj, abs(first_y - self.y) + bkg_height_adj), 0, 3)
+                        pygame.draw.rect(window, background_color,
+                                         (first_x - 50, first_y - 30, abs(first_x - self.x) + bkg_width_adj,
+                                          abs(first_y - self.y) + bkg_height_adj), 0, 3)
+                    else:
+                        pygame.draw.rect(window, (100, 100, 100, 128),
+                                         (first_x - 45, first_y - 25, abs(first_x - self.x) + bkg_width_adj,
+                                          abs(first_y - self.y) + bkg_height_adj), 0, 3)
+                        pygame.draw.rect(window, background_color,
+                                         (first_x - 50, first_y - 30, abs(first_x - max(loc_list_x)) + bkg_width_adj,
+                                          abs(first_y - max(loc_list_y)) + bkg_height_adj), 0, 3)
+                else:
+                    pygame.draw.rect(window, (100, 100, 100, 128),
+                                        (min_x - 45, min_y - 25, abs(max_x - min_x) + bkg_width_adj,
+                                        abs(max_y - min_y) + bkg_height_adj), 0, 3)
+                    pygame.draw.rect(window, background_color,
+                                        (min_x - 50, min_y - 30, abs(max_x - min_x) + bkg_width_adj,
+                                        abs(max_y - min_y) + bkg_height_adj), 0, 3)
                 if cancel.handleEvent(event):
                     self.clicked_choices = 'cancel'
                     Quit = True
@@ -330,6 +342,10 @@ if __name__ == '__main__':
     clock = pygame.time.Clock()
     pygame.init()
     n = pygwidgets.TextButton(window, (300, 400), 'test')
+    #analyse_choice = CheckBox(32, all_statistic_types, 32,
+    #                          window, clock, first_x=50, first_y=30, each_add_x=0, each_add_y=15, auto_adjust=False,
+    #                          buttons_adjust_length=40, bkg_width_adj=400,
+    #                          background_color=(90, 90, 150), font_name='fonts/JetBrainsMono-Light.ttf', font_size=15)
     while True:
         for event in pygame.event.get():
 
@@ -338,10 +354,12 @@ if __name__ == '__main__':
                 sys.exit()
 
             window.fill((0, 191, 255))
+            pygame.display.update()
             if n.handleEvent(event):
                 charting_sigma_selector = CheckBox(4, ['1 sigma', '2 sigma', '3 sigma', 'mean'], 4,
-                                                   window, clock, first_x=40, first_y=100, each_add_x=0, each_add_y=30,
-                                                   buttons_adjust_length=0, background_color=(90, 90, 150))
+                                                   window, clock, first_x=40, first_y=100, each_add_x=0, each_add_y=20,
+                                                   buttons_adjust_length=0, background_color=(90, 90, 150), font_name='fonts/JetBrainsMono-Light.ttf',font_size=18,
+                                                   button_border_color=(110, 110, 170), button_border_width=1)
             n.draw()
             pygame.display.update()
             clock.tick(30)

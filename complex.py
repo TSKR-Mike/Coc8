@@ -132,10 +132,9 @@ def select_curr_complex(window, all_complexes, comments=''):
                 return curr_complex
 
 def load_complex(window, clock, names, debug=False):
-    loading_type_selector = CheckBox(2, ['input manually', 'load from .CocComplexInfo files'],
-                                     1,
-                                     window, clock, first_x=40, first_y=100, each_add_x=0, each_add_y=30,
-                                     buttons_adjust_length=100, background_color=(90, 90, 150))
+    loading_type_selector = CheckBox(2, ['input manually', 'load from .CocComplexInfo files'], 1, window, clock,
+                                     first_x=40, first_y=100, each_add_x=0, each_add_y=30,
+                                     background_color=(90, 90, 150), buttons_adjust_length=100)
     if loading_type_selector.clicked_choices == 'cancel':
         message_window.error('no inputs is given')
         return
@@ -278,7 +277,7 @@ class ComplexUi(subWindow):
 
             if self.update:self.update = False
             for event in pygame.event.get():
-                if type(self.curr_complex_preview) == TableViewer.Table.WindowListViewer:self.curr_complex_preview.handle_event(event)
+                if type(self.curr_complex_preview) == TableViewer.Table.WindowListViewer:self.curr_complex_preview.handleEvent(event)
                 if type(self.all_complex_preview) == TableViewer.Table.WindowListViewer:self.all_complex_preview.handle_event(event)
                 for curr in self.all_buttons_line1.Buttons:
                     if curr.handleEvent(event):
@@ -669,11 +668,9 @@ class ComplexUi(subWindow):
     def change_curr_complex(self):
         if self.curr_complex is None:
             message_window.error('no complex is selected!');return
-        changing_type_selector = CheckBox(2,
-                                         ['reset value','RENAME'],
-                                         1,
-                                         self.window, self.clock, first_x=60, first_y=100, each_add_x=0, each_add_y=30,
-                                         buttons_adjust_length=100, background_color=(90, 90, 150))
+        changing_type_selector = CheckBox(2, ['reset value', 'RENAME'], 1, self.window, self.clock, first_x=60,
+                                          first_y=100, each_add_x=0, each_add_y=30, background_color=(90, 90, 150),
+                                          buttons_adjust_length=100)
         if len(changing_type_selector.clicked_choices) == 0 or type(changing_type_selector.clicked_choices) == str:return
         choice = changing_type_selector.clicked_choices[0]
 
@@ -760,11 +757,9 @@ class ComplexUi(subWindow):
         self.update = True
 
     def others(self):
-        type_selector = CheckBox(5,
-                                 ['Remove Current Complex', 'Complex Angle', 'Complex to Polar', 'Square Root', 'Cube Root'],
-                                 1,
-                                 self.window, self.clock, first_x=40, first_y=100, each_add_x=0, each_add_y=30,
-                                 buttons_adjust_length=100, background_color=(90, 90, 150))
+        type_selector = CheckBox(5, ['Remove Current Complex', 'Complex Angle', 'Complex to Polar', 'Square Root',
+                                     'Cube Root'], 1, self.window, self.clock, first_x=40, first_y=100, each_add_x=0,
+                                 each_add_y=30, background_color=(90, 90, 150), buttons_adjust_length=100)
         if type_selector.clicked_choices == 'cancel' or len(type_selector.clicked_choices) == 0:
             message_window.error('no choice is selected');return
         choice = type_selector.clicked_choices[0]

@@ -749,8 +749,10 @@ def data_visualize(window, clock, debug=False):
         try:
             file = ExcelMgr(file_name)
             file_data = file.data
-            charting_type_selector = CheckBox(9, ['pie', 'hist', 'box', 'violin', 'error bar', 'hist2d', 'hexbin', 'plot', 'scatter'], 9,
-                         window, clock, first_x=40, first_y=100, each_add_x=0, each_add_y=30, buttons_adjust_length=0, background_color=(90, 90, 150))
+            charting_type_selector = CheckBox(9,
+                                              ['pie', 'hist', 'box', 'violin', 'error bar', 'hist2d', 'hexbin', 'plot',
+                                               'scatter'], 9, window, clock, first_x=40, first_y=100, each_add_x=0,
+                                              each_add_y=30, background_color=(90, 90, 150), buttons_adjust_length=0)
             list_preview = WindowListViewer(file_data, (1004, 410), window, (0, 200))
             if type(charting_type_selector.clicked_choices) == str:
                 return
@@ -1267,8 +1269,10 @@ def data_visualize(window, clock, debug=False):
                 else:
                     data2.append(float(i))
             data = data2
-            charting_type_selector = CheckBox(9, ['pie', 'hist', 'box', 'violin', 'error bar', 'hist2d', 'hexbin', 'plot', 'scatter'], 9,
-                         window, clock, first_x=40, first_y=100, each_add_x=0, each_add_y=30, buttons_adjust_length=100,background_color=(90, 90, 150))
+            charting_type_selector = CheckBox(9,
+                                              ['pie', 'hist', 'box', 'violin', 'error bar', 'hist2d', 'hexbin', 'plot',
+                                               'scatter'], 9, window, clock, first_x=40, first_y=100, each_add_x=0,
+                                              each_add_y=30, background_color=(90, 90, 150), buttons_adjust_length=100)
             choices = charting_type_selector.clicked_choices
             pie_labels = []
             pie_value_poses = []
@@ -1539,9 +1543,9 @@ def data_analyze(window, clock):
                                                         'yes', "no")
     else:
         refresh_data = False
-    analyse_choice = CheckBox(32, all_statistic_types, 32,
-                 window, clock, first_x=50, first_y=30, each_add_x=0, each_add_y=15, auto_adjust=False, buttons_adjust_length=40, bkg_width_adj=400,
-                              background_color=(90, 90, 150))
+    analyse_choice = CheckBox(32, all_statistic_types, 32, window, clock, first_x=50, first_y=30, each_add_x=0,
+                              each_add_y=15, background_color=(90, 90, 150), auto_adjust=False,
+                              buttons_adjust_length=40, bkg_width_adj=400)
     many_statistic_per_type = pyghelpers.textYesNoDialog(window, (0, 300, 700, 300), 'how many statistics of each type do you want to calculate?',
                                                         'Many(often use in data comparison)', "Only one each type")
     analyse_types = []
@@ -1879,8 +1883,8 @@ def data_comparison(window, clock):
             message_window.error('There is no available data, this time of comparison skips.')
             continue
         charts_type = CheckBox(8, ['hist', 'box', 'violin', 'error bar', 'hist2d', 'hexbin', 'plot', 'scatter'], 8,
-                     window, clock, first_x=40, first_y=100, each_add_x=0, each_add_y=30, buttons_adjust_length=0,
-                     background_color=(90, 90, 150))
+                               window, clock, first_x=40, first_y=100, each_add_x=0, each_add_y=30,
+                               background_color=(90, 90, 150), buttons_adjust_length=0)
         curr_fig = fig.add_subplot(charts_x_num, charts_y_num, 1)
         if len(charts_type.clicked_choices) == 0:
             message_window.error('no type of charts is selected.Current skips.')
@@ -2023,9 +2027,9 @@ def data_distribution(window, clock):
     draw_normal = pyghelpers.textYesNoDialog(window, (0, 300, 400, 300),
                                                         'do you want to draw the normal distribution?',
                                                         'yes', "no")
-    charting_sigma_selector = CheckBox(4, ['1 sigma', '2 sigma', '3 sigma', 'mean'], 4,
-                                      window, clock, first_x=40, first_y=100, each_add_x=0, each_add_y=30,
-                                      buttons_adjust_length=0, background_color=(90, 90, 150))
+    charting_sigma_selector = CheckBox(4, ['1 sigma', '2 sigma', '3 sigma', 'mean'], 4, window, clock, first_x=40,
+                                       first_y=100, each_add_x=0, each_add_y=30, background_color=(90, 90, 150),
+                                       buttons_adjust_length=0)
     charting_options = [False, False, False, False]
     if not len(charting_sigma_selector.clicked_choices) == 0:
         for _ in charting_sigma_selector.clicked_choices:charting_options[_]=True

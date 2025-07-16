@@ -1270,7 +1270,8 @@ while True:
                                                                 inputTextColor=(0, 0, 0))
                             if limit is None:
                                 message_window.error('no limit is given');break
-                            direction = CheckBox(3, ['+', '-', '+/-'], 1, window, clock, first_x=120, first_y=30, each_add_x=0, each_add_y=20)
+                            direction = CheckBox(3, ['+', '-', '+/-'], 1, window, clock, first_x=120, first_y=30,
+                                                 each_add_x=0, each_add_y=20)
 
                             simplified_formula = sympy.sympify(formula)
                             if type(direction.clicked_choices) == str or direction.clicked_choices == []:
@@ -1462,7 +1463,7 @@ while True:
 
 
     if point:
-        line3.Buttons[0].enable()
+        line3.Buttons[0].button_is_enabled()
     else:
         line3.Buttons[0].disable()
     pygame.display.update()

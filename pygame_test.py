@@ -7,9 +7,9 @@ from statistics import Message_window
 m = Message_window()
 screen = pygame.display.set_mode((640, 480))
 clock = pygame.time.Clock()
-charts_type = CheckBox(8, ['hist', 'box', 'violin', 'error bar', 'hist2d', 'hexbin', 'plot', 'scatter'], 8,
-                     screen, clock, first_x=40, first_y=100, each_add_x=0, each_add_y=30,buttons_adjust_length=0,
-                     background_color=(90, 90, 150))
+charts_type = CheckBox(8, ['hist', 'box', 'violin', 'error bar', 'hist2d', 'hexbin', 'plot', 'scatter'], 8, screen,
+                       clock, first_x=40, first_y=100, each_add_x=0, each_add_y=30, background_color=(90, 90, 150),
+                       buttons_adjust_length=0)
 num = pyghelpers.textAnswerDialog(screen, (0, 0, 1004, 200), 'How many ' +
                                                   ['hist', 'box', 'violin', 'error bar', 'hist2d', 'hexbin',
                                                    'plot', 'scatter'][0] + ' charts do you want to draw?',

@@ -166,10 +166,9 @@ def select_curr_vector(window, all_vectors, comments=''):
                 return curr_complex
 
 def load_vector(window, clock, names, debug=False):
-    loading_type_selector = CheckBox(2, ['input manually', 'load from .CocVectorInfo files'],
-                                     1,
-                                     window, clock, first_x=40, first_y=100, each_add_x=0, each_add_y=30,
-                                     buttons_adjust_length=100, background_color=(90, 90, 150))
+    loading_type_selector = CheckBox(2, ['input manually', 'load from .CocVectorInfo files'], 1, window, clock,
+                                     first_x=40, first_y=100, each_add_x=0, each_add_y=30,
+                                     background_color=(90, 90, 150), buttons_adjust_length=100)
     if loading_type_selector.clicked_choices == 'cancel':
         message_window.error('no inputs is given')
         return
@@ -319,7 +318,7 @@ class VectorUi(subWindow):
                     other.append(curr)
             events = wheel_events + other
             for event in events:
-                if type(self.curr_vector_preview) == TableViewer.Table.WindowListViewer: self.curr_vector_preview.handle_event(event)
+                if type(self.curr_vector_preview) == TableViewer.Table.WindowListViewer: self.curr_vector_preview.handleEvent(event)
                 if type(self.all_vector_preview) == TableViewer.Table.WindowListViewer: self.all_vector_preview.handle_event(event)
                 for curr in self.all_buttons_line1.Buttons:
                     if curr.handleEvent(event):
@@ -530,11 +529,9 @@ class VectorUi(subWindow):
         if self.curr_vector is None:
             message_window.error('no vector is selected!')
             return
-        changing_type_selector = CheckBox(2,
-                                          ['reset value', 'RENAME'],
-                                          1,
-                                          self.window, self.clock, first_x=60, first_y=100, each_add_x=0, each_add_y=30,
-                                          buttons_adjust_length=100, background_color=(90, 90, 150))
+        changing_type_selector = CheckBox(2, ['reset value', 'RENAME'], 1, self.window, self.clock, first_x=60,
+                                          first_y=100, each_add_x=0, each_add_y=30, background_color=(90, 90, 150),
+                                          buttons_adjust_length=100)
         if len(changing_type_selector.clicked_choices) == 0 or type(
             changing_type_selector.clicked_choices) == str: return
         choice = changing_type_selector.clicked_choices[0]
@@ -729,12 +726,10 @@ class VectorUi(subWindow):
                 return
 
     def others(self):
-        type_selector = CheckBox(6,
-                                 ['Remove Curr Vec','Vector Projection', 'Vector Angle', 'Normalize Vector', 'Cross Product',
-                                  'Projection Length'],
-                                 1,
-                                 self.window, self.clock, first_x=40, first_y=100, each_add_x=0, each_add_y=30,
-                                 buttons_adjust_length=100, background_color=(90, 90, 150))
+        type_selector = CheckBox(6, ['Remove Curr Vec', 'Vector Projection', 'Vector Angle', 'Normalize Vector',
+                                     'Cross Product',
+                                     'Projection Length'], 1, self.window, self.clock, first_x=40, first_y=100,
+                                 each_add_x=0, each_add_y=30, background_color=(90, 90, 150), buttons_adjust_length=100)
         if type_selector.clicked_choices == 'cancel' or len(type_selector.clicked_choices) == 0:
             message_window.error('no choice is selected')
             return
